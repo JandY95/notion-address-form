@@ -134,19 +134,31 @@
     textarea{ min-height: 92px; resize: vertical; }
     .readonly{ background: rgba(243,244,246,.75); }
 
+    /* ✅ row 레이아웃: 버튼이 커지는 원인(1:1 flex)을 제거하고,
+       입력칸은 크게(grow), 버튼은 작게(compact) */
     .row{ display:flex; gap: 10px; align-items: stretch; }
-    .row > *{ flex:1; }
+    .row .grow{ flex: 1 1 auto; min-width: 0; }
+    .row .btn-compact{ flex: 0 0 auto; width: 132px; padding: 12px 10px; }
+
+    /* 아주 좁은 모바일에서는 버튼이 옆에서 찌그러지지 않게 아래로 */
+    @media (max-width: 420px){
+      .row{ flex-direction: column; }
+      .row .btn-compact{ width: 100%; }
+    }
 
     .btn{
       border:none;
       border-radius: 14px;
-      padding: 12px 14px;
       font-size: 16px;
       font-weight: 900;
       cursor:pointer;
       min-height: 48px;
       user-select:none;
       transition: filter .15s ease, transform .05s ease;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap: 6px;
     }
     .btn:active{ transform: translateY(1px); }
     .btn-outline{
@@ -158,6 +170,7 @@
       background: linear-gradient(135deg, rgba(229,106,166,.98), rgba(122,167,255,.98));
       color:#fff;
       box-shadow: 0 12px 24px rgba(229,106,166,.16);
+      padding: 12px 14px;
     }
 
     .actions{ margin-top: 16px; display:flex; gap: 10px; }
@@ -303,8 +316,10 @@
             <div class="field" id="f_address" style="grid-column: 1 / -1;">
               <label for="baseAddress">주소</label>
               <div class="row">
-                <input type="text" id="baseAddress" class="readonly" readonly placeholder="‘주소 찾기’로 검색해주세요" />
-                <button type="button" class="btn btn-outline" id="btnFindAddress">주소 찾기</button>
+                <input type="text" id="baseAddress" class="readonly grow" readonly placeholder="‘주소 찾기’로 검색해주세요" />
+                <button type="button" class="btn btn-outline btn-compact" id="btnFindAddress">
+                  🔎 주소 찾기
+                </button>
               </div>
               <div class="err">주소 찾기를 눌러 주소를 선택해주세요.</div>
               <div class="hint">도로명 주소를 선택하면 자동으로 입력돼요.</div>
@@ -377,7 +392,6 @@
     function validatePhoneKR(digits){
       if (!digits) return { ok: false, msg: '연락처를 입력해주세요.' };
 
-      // 휴대폰
       if (digits.startsWith('010')) {
         if (digits.length === 11) return { ok: true };
         return { ok: false, msg: '휴대폰 번호(010)는 11자리로 입력해주세요. 예) 010-1234-5678' };
@@ -387,19 +401,16 @@
         return { ok: false, msg: '휴대폰 번호를 끝까지 입력해주세요. 예) 011-123-4567' };
       }
 
-      // 070
       if (digits.startsWith('070')) {
         if (digits.length === 11) return { ok: true };
         return { ok: false, msg: '070 번호를 끝까지 입력해주세요. 예) 070-1234-5678' };
       }
 
-      // 서울(02)
       if (digits.startsWith('02')) {
         if (digits.length === 9 || digits.length === 10) return { ok: true };
         return { ok: false, msg: '서울(02) 번호를 끝까지 입력해주세요. 예) 02-123-4567 또는 02-1234-5678' };
       }
 
-      // 기타 지역번호(0xx) 일반전화
       if (/^0\d{2}/.test(digits)) {
         if (digits.length === 10 || digits.length === 11) return { ok: true };
         return { ok: false, msg: '지역번호 포함 전화번호를 끝까지 입력해주세요. 예) 031-123-4567' };
@@ -482,13 +493,11 @@
 
     document.getElementById('detailAddress').addEventListener('input', updateFullAddress);
 
-    // 입력 중 포맷만 도와주고, 최종 검증은 "입력 완료"에서
     document.getElementById('phone').addEventListener('input', (e) => {
       const after = formatPhoneKRSafe(e.target.value);
       if(e.target.value !== after) e.target.value = after;
     });
 
-    // ===== 제출 =====
     document.getElementById('form').addEventListener('submit', async (e) => {
       e.preventDefault();
       clearErrors();
@@ -531,12 +540,8 @@
 
       if(missing.length){
         showErrors(missing);
-        // 연락처가 문제면 구체 안내도 같이
-        if(!phoneCheck.ok){
-          setStatus(phoneCheck.msg, 'bad');
-        }else{
-          setStatus('필수 항목이 누락되었습니다. 위 항목을 확인해주세요.', 'bad');
-        }
+        if(!phoneCheck.ok) setStatus(phoneCheck.msg, 'bad');
+        else setStatus('필수 항목이 누락되었습니다. 위 항목을 확인해주세요.', 'bad');
         return;
       }
 
