@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>출고 정보 입력</title>
+  <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; max-width: 640px; margin: 40px auto; padding: 20px; }
+    label { display:block; font-weight:600; margin-top:14px; margin-bottom:6px; }
+    input, textarea, button { width:100%; box-sizing:border-box; font-size:16px; }
+    input, textarea { padding:10px 12px; border:1px solid #d1d5db; border-radius:8px; }
+    .readonly { background:#f3f4f6; }
+    .btn { background:#4f46e5; color:#fff; border:none; padding:12px 16px; border-radius:8px; cursor:pointer; margin-top:10px; }
+    .hidden { display:none; }
+    .status { margin-top:14px; font-size:14px; }
+  </style>
+</head>
+<body>
+  <h1>📦 출고 정보 입력</h1>
+
+  <form id="form">
+    <label>고객명</label>
+    <input type="text" id="customerName" required />
+
+    <label>연락처</label>
+    <input type="tel" id="phone" placeholder="예: 010-1234-5678" required />
+
+    <div class="hidden">
+      <label>Website</label>
+      <input type="text" id="website" autocomplete="off" />
+    </div>
+
+    <label>우편번호</label>
+    <input type="text" id="postcode" class="readonly" readonly required />
+    <button type="button" class="btn" onclick="findAddress()">주소 검색</button>
+
+    <label>기본주소</label>
+    <input type="text" id="baseAddress" class="readonly" readonly required />
+
+    <label>상세주소</label>
+    <input type="text" id="detailAddress" placeholder="동/호, 상호명, 층수 등" />
+
+    <label>전체주소</label>
+    <input type="text" id="fullAddress" class="readonly" readonly required />
+
+    <label>요청사항</label>
+    <textarea id="request" rows="4" placeholder="배송 요청사항"></textarea>
+
+    <button type="submit" class="btn">✅ 노션에 저장</button>
+    <div class="status" id="status"></div>
+  </form>
+
+  <script>
+    const submitUrl = '/api/submit';
+
+    function updateFullAddress() {
+      const base = document.getElementById('baseAddress').value.trim();
+      const detail = document.getElementById('detailAddress').value.trim();
+      document.getElementById('fullAddress').value = detail ? `${base} ${detail}` : base;
+    }
+
+    function findAddress() {
+      new daum.Postcode({
+        oncomplete: (data) => {
+          document.getElementById('postcode').value = data.zonecode || '';
+          document.getElementById('baseAddress').value = data.address || '';
+          updateFullAddress();
+          document.getElementById('detailAddress').focus();
+        }
+      }).open();
+    }
+
+    document.getElementById('detailAddress').addEventListener('input', updateFullAddress);
+
+    document.getElementById('form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const status = document.getElementById('status');
+      status.textContent = '저장 중...';
+
+      const data = {
+        customerName: document.getElementById('customerName').value.trim(),
+        phone: document.getElementById('phone').value.trim(),
+        postcode: document.getElementById('postcode').value.trim(),
+        baseAddress: document.getElementById('baseAddress').value.trim(),
+        detailAddress: document.getElementById('detailAddress').value.trim(),
+        fullAddress: document.getElementById('fullAddress').value.trim(),
+        request: document.getElementById('request').value.trim(),
+        website: document.getElementById('website').value.trim()
+      };
+
+      try {
+        const res = await fetch(submitUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        const result = await res.json();
+        if (res.ok) {
+          status.textContent = `✅ 저장 완료 (접수번호: ${result.receiptTitle})`;
+          document.getElementById('form').reset();
+        } else {
+          status.textContent = `❌ 저장 실패: ${result.error || '오류'}`;
+        }
+      } catch {
+        status.textContent = '❌ 네트워크 오류';
+      }
+    });
+  </script>
+</body>
+</html>
