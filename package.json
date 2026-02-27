@@ -1,0 +1,11 @@
+{
+  "name": "notion-address-form",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vercel dev"
+  },
+  "dependencies": {
+    "@notionhq/client": "^2.2.15"
+  }
+}
