@@ -22,6 +22,7 @@
       --shadow: 0 14px 48px rgba(17,24,39,.10);
       --radius: 18px;
     }
+
     *{ box-sizing:border-box; }
     body{
       margin:0;
@@ -33,17 +34,27 @@
         linear-gradient(180deg, var(--bg1), var(--bg2));
       min-height:100vh;
     }
-    .wrap{ width:min(760px, 92vw); margin:30px auto 64px; }
 
-    .hero{ padding:14px 8px 10px; }
-    .brand-row{ display:flex; align-items:center; gap:12px; margin-bottom:10px; }
+    .wrap{ width:min(760px, 92vw); margin: 28px auto 64px; }
+    @media (max-width: 640px){
+      .wrap{ margin: 18px auto 46px; }
+    }
 
+    /* 헤더(브랜드 강조) */
+    .hero{ padding: 14px 8px 10px; }
+    .brand-row{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      margin-bottom: 10px;
+    }
     .mono{
-      width:42px; height:42px; border-radius:14px;
-      background: linear-gradient(135deg, rgba(229,106,166,.95), rgba(122,167,255,.95));
+      width:44px; height:44px; border-radius:16px;
+      background: linear-gradient(135deg, rgba(229,106,166,.96), rgba(122,167,255,.96));
       box-shadow: 0 14px 30px rgba(229,106,166,.16);
       display:flex; align-items:center; justify-content:center;
-      color:#fff; font-weight:900; letter-spacing:.8px; position:relative; overflow:hidden; flex:0 0 auto;
+      color:#fff; font-weight:950; letter-spacing:.8px;
+      position:relative; overflow:hidden; flex:0 0 auto;
     }
     .mono::after{
       content:""; position:absolute; inset:-40%;
@@ -52,15 +63,29 @@
     }
     .mono span{ position:relative; z-index:1; font-size:18px; }
 
-    .brand-text{ display:flex; flex-direction:column; line-height:1.1; }
-    .brand-name{ font-weight:900; letter-spacing:.8px; font-size:14px; opacity:.95; }
-    .brand-sub{ font-size:12.5px; color:var(--muted); margin-top:3px; }
+    .brand-name{
+      font-weight:950;
+      letter-spacing: 1.2px;
+      font-size: 16px;
+      text-transform: uppercase;
+    }
 
-    .title{ margin:8px 0 6px; font-size:clamp(26px, 4.4vw, 36px); font-weight:950; letter-spacing:-0.4px; }
-    .subtitle{ margin:0; color:var(--muted); line-height:1.65; font-size:14.5px; }
+    .title{
+      margin: 8px 0 6px;
+      font-size: clamp(26px, 4.4vw, 36px);
+      font-weight: 950;
+      letter-spacing: -0.4px;
+    }
+    .subtitle{
+      margin:0;
+      color: var(--muted);
+      line-height: 1.65;
+      font-size: 14.5px;
+    }
 
+    /* 카드 */
     .card{
-      margin-top:14px;
+      margin-top: 14px;
       background: var(--card);
       backdrop-filter: blur(10px);
       border: 1px solid rgba(229,231,235,.78);
@@ -69,88 +94,165 @@
       overflow:hidden;
     }
     .card-top{
-      padding:14px 18px;
+      padding: 14px 18px;
       border-bottom: 1px solid rgba(229,231,235,.78);
       background: linear-gradient(90deg, rgba(229,106,166,.09), rgba(122,167,255,.08));
     }
-    .notice{ font-size:13.2px; color:var(--muted); line-height:1.55; }
+    .notice{
+      font-size: 13.2px;
+      color: var(--muted);
+      line-height: 1.55;
+    }
     .notice b{ color:#374151; }
 
-    .form{ padding:18px; }
-    .grid{ display:grid; grid-template-columns: 1fr 1fr; gap:14px; }
+    .form{ padding: 18px; }
+    .grid{ display:grid; grid-template-columns: 1fr 1fr; gap: 14px; }
     @media (max-width: 640px){
-      .wrap{ margin:18px auto 46px; }
       .grid{ grid-template-columns: 1fr; }
-      .form{ padding:16px; }
-      .card-top{ padding:13px 16px; }
+      .form{ padding: 16px; }
+      .card-top{ padding: 13px 16px; }
     }
 
-    .field{ display:flex; flex-direction:column; gap:6px; }
-    label{ font-size:14px; font-weight:800; letter-spacing:-.1px; }
-    .hint{ font-size:12.5px; color:var(--muted); line-height:1.45; }
+    .field{ display:flex; flex-direction:column; gap: 6px; }
+    label{ font-size: 14px; font-weight: 800; letter-spacing:-.1px; }
+    .hint{ font-size: 12.5px; color: var(--muted); line-height:1.45; }
 
     input, textarea{
       width:100%;
-      border:1px solid var(--line);
-      border-radius:14px;
-      padding:12px 12px;
-      font-size:16px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 12px 12px;
+      font-size: 16px;
       outline:none;
       background:#fff;
-      transition: box-shadow .15s ease, border-color .15s ease, transform .05s ease;
+      transition: box-shadow .15s ease, border-color .15s ease;
     }
     input:focus, textarea:focus{
       border-color: rgba(229,106,166,.55);
       box-shadow: 0 0 0 4px rgba(229,106,166,.13);
     }
-    textarea{ min-height:92px; resize:vertical; }
+    textarea{ min-height: 92px; resize: vertical; }
     .readonly{ background: rgba(243,244,246,.75); }
 
-    .row{ display:flex; gap:10px; align-items:stretch; }
+    .row{ display:flex; gap: 10px; align-items: stretch; }
     .row > *{ flex:1; }
 
     .btn{
-      border:none; border-radius:14px;
-      padding:12px 14px;
-      font-size:16px;
-      font-weight:900;
+      border:none;
+      border-radius: 14px;
+      padding: 12px 14px;
+      font-size: 16px;
+      font-weight: 900;
       cursor:pointer;
-      min-height:48px;
+      min-height: 48px;
       user-select:none;
       transition: filter .15s ease, transform .05s ease;
     }
     .btn:active{ transform: translateY(1px); }
-    .btn-outline{ background:#fff; border:1px solid rgba(229,106,166,.42); color:#b84a84; }
+    .btn-outline{
+      background:#fff;
+      border:1px solid rgba(229,106,166,.42);
+      color:#b84a84;
+    }
     .btn-primary{
       background: linear-gradient(135deg, rgba(229,106,166,.98), rgba(122,167,255,.98));
       color:#fff;
       box-shadow: 0 12px 24px rgba(229,106,166,.16);
     }
 
-    .actions{ margin-top:16px; display:flex; gap:10px; }
-    @media (max-width: 640px){ .actions{ flex-direction:column; } }
+    .actions{ margin-top: 16px; display:flex; gap: 10px; }
+    @media (max-width: 640px){ .actions{ flex-direction: column; } }
 
+    /* 에러 */
     .error-box{
       display:none;
-      border:1px solid rgba(239,68,68,.35);
+      border: 1px solid rgba(239,68,68,.35);
       background: rgba(239,68,68,.06);
       color:#991b1b;
-      padding:12px 12px;
-      border-radius:14px;
-      margin-bottom:12px;
-      line-height:1.55;
-      font-size:14px;
+      padding: 12px 12px;
+      border-radius: 14px;
+      margin-bottom: 12px;
+      line-height: 1.55;
+      font-size: 14px;
     }
     .field.invalid input, .field.invalid textarea{
       border-color: rgba(239,68,68,.55);
       box-shadow: 0 0 0 4px rgba(239,68,68,.12);
     }
-    .field .err{ display:none; color:var(--danger); font-size:12.5px; font-weight:800; }
+    .field .err{
+      display:none;
+      color: var(--danger);
+      font-size: 12.5px;
+      font-weight: 800;
+    }
     .field.invalid .err{ display:block; }
 
-    .status{ margin-top:12px; font-size:14px; color:var(--muted); line-height:1.5; min-height:22px; }
-    .status.ok{ color:#0f766e; font-weight:900; }
-    .status.bad{ color:#b91c1c; font-weight:900; }
+    .status{
+      margin-top: 12px;
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.5;
+      min-height: 22px;
+    }
+    .status.ok{ color:#0f766e; font-weight: 900; }
+    .status.bad{ color:#b91c1c; font-weight: 900; }
+
+    /* ===== 주소검색 모달(중앙) ===== */
+    .modal{
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 9999;
+    }
+    .modal.show{ display:flex; }
+    .modal-backdrop{
+      position:absolute;
+      inset:0;
+      background: rgba(17,24,39,.45);
+      backdrop-filter: blur(2px);
+    }
+    .modal-panel{
+      position: relative;
+      width: min(520px, 96vw);
+      height: min(620px, 86vh);
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 24px 80px rgba(0,0,0,.25);
+      overflow: hidden;
+      border: 1px solid rgba(229,231,235,.9);
+    }
+    @media (max-width: 640px){
+      .modal-panel{ width: 96vw; height: 86vh; border-radius: 16px; }
+    }
+    .modal-header{
+      display:flex;
+      align-items:center;
+      justify-content: space-between;
+      padding: 12px 14px;
+      background: linear-gradient(90deg, rgba(229,106,166,.10), rgba(122,167,255,.10));
+      border-bottom: 1px solid rgba(229,231,235,.85);
+      font-weight: 900;
+      letter-spacing: -.1px;
+    }
+    .modal-close{
+      border:none;
+      background: transparent;
+      font-size: 22px;
+      line-height: 1;
+      cursor:pointer;
+      padding: 6px 10px;
+      border-radius: 10px;
+    }
+    .modal-close:hover{
+      background: rgba(0,0,0,.06);
+    }
+    .modal-body{
+      width:100%;
+      height: calc(100% - 49px);
+    }
   </style>
 </head>
 
@@ -159,10 +261,7 @@
     <header class="hero">
       <div class="brand-row">
         <div class="mono" aria-hidden="true"><span>C</span></div>
-        <div class="brand-text">
-          <div class="brand-name">COCORO SHOP</div>
-          <div class="brand-sub">배송 정보 입력</div>
-        </div>
+        <div class="brand-name">COCORO SHOP</div>
       </div>
 
       <h1 class="title">배송 정보</h1>
@@ -235,6 +334,18 @@
     </section>
   </div>
 
+  <!-- 주소검색 모달(중앙) -->
+  <div class="modal" id="postcodeModal" aria-hidden="true">
+    <div class="modal-backdrop" id="postcodeBackdrop"></div>
+    <div class="modal-panel" role="dialog" aria-modal="true" aria-label="주소 검색">
+      <div class="modal-header">
+        <div>주소 검색</div>
+        <button type="button" class="modal-close" id="btnCloseModal" aria-label="닫기">×</button>
+      </div>
+      <div class="modal-body" id="postcodeEmbed"></div>
+    </div>
+  </div>
+
   <script>
     const submitUrl = '/api/submit';
 
@@ -287,8 +398,34 @@
       return true;
     }
 
-    function findAddress() {
+    // ===== 모달 open/close =====
+    const modal = document.getElementById('postcodeModal');
+    const embedEl = document.getElementById('postcodeEmbed');
+
+    function openModal(){
+      modal.classList.add('show');
+      modal.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeModal(){
+      modal.classList.remove('show');
+      modal.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+      embedEl.innerHTML = '';
+    }
+
+    document.getElementById('btnCloseModal').addEventListener('click', closeModal);
+    document.getElementById('postcodeBackdrop').addEventListener('click', closeModal);
+    document.addEventListener('keydown', (e) => {
+      if(e.key === 'Escape' && modal.classList.contains('show')) closeModal();
+    });
+
+    // 주소 찾기(페이지 중앙 모달 + embed)
+    function findAddressModal(){
       if(!ensureDaumLoaded()) return;
+
+      openModal();
+      embedEl.innerHTML = '';
 
       new daum.Postcode({
         oncomplete: (data) => {
@@ -296,12 +433,16 @@
           document.getElementById('baseAddress').value = data.address || '';
           document.getElementById('detailAddress').focus();
           updateFullAddress();
+          closeModal();
+        },
+        onclose: () => {
+          // 사용자가 닫으면 그냥 모달 닫기
+          closeModal();
         }
-      }).open();
+      }).embed(embedEl);
     }
 
-    // 이벤트 바인딩(인라인 onclick 대신)
-    document.getElementById('btnFindAddress').addEventListener('click', findAddress);
+    document.getElementById('btnFindAddress').addEventListener('click', findAddressModal);
 
     document.getElementById('detailAddress').addEventListener('input', updateFullAddress);
     document.getElementById('phone').addEventListener('input', (e) => {
@@ -324,7 +465,527 @@
       const request = document.getElementById('request').value.trim();
 
       const missing = [];
+      if(!customerName){ document.getElementById('f_customerName').classList.add('invalid'); missing.push('받는 분 성함'); }
+      if(!phone){ document.getElementById('f_phone').classList.add('invalid'); missing.push('연락처'); }
+      if(!postcode || !baseAddress){ document.getElementById('f_address').classList.add('invalid'); missing.push('주소(주소 찾기)'); }
+      if(!detailAddress){ document.getElementById('f_detailAddress').classList.add('invalid'); missing.push('상세주소'); }
 
+      if(missing.length){
+        showErrors(missing);
+        setStatus('필수 항목이 누락되었습니다. 위 항목을 확인해주세요.', 'bad');
+        return;
+      }
+
+      const btn = document.getElementById('submitBtn');
+      btn.disabled = true;
+      btn.style.filter = 'grayscale(.1) opacity(.85)';
+      setStatus('저장 중입니다… 잠시만 기다려주세요.');
+
+      const data = {
+        customerName,
+        phone,
+        postcode,
+        baseAddress,
+        detailAddress,
+        fullAddress,
+        request,
+        website: ''
+      };
+
+      try {
+        const response = await fetch(submitUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          setStatus(`✅ 입력 완료! ${result.receiptTitle ? `(접수번호: ${result.receiptTitle})` : ''}`, 'ok');
+          document.getElementById('form').reset();
+          document.getElementById('postcode').value = '';
+          document.getElementById('baseAddress').value = '';
+          document.getElementById('fullAddress').value = '';
+        } else {
+          setStatus(`❌ 저장에 실패했어요. (${result.error || '오류'})`, 'bad');
+        }
+      } catch (error) {
+        setStatus('❌ 네트워크 오류가 발생했어요. 잠시 후 다시 시도해주세요.', 'bad');
+      } finally {
+        btn.disabled = false;
+        btn.style.filter = '';
+      }
+    });
+  </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>COCORO SHOP | 배송 정보</title>
+
+  <!-- 카카오(다음) 우편번호 서비스 -->
+  <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+
+  <style>
+    :root{
+      --bg1:#fff7fb;
+      --bg2:#f6fbff;
+      --card:rgba(255,255,255,.92);
+      --text:#111827;
+      --muted:#6b7280;
+      --line:#e5e7eb;
+      --accent:#e56aa6;
+      --accent2:#7aa7ff;
+      --danger:#ef4444;
+      --shadow: 0 14px 48px rgba(17,24,39,.10);
+      --radius: 18px;
+    }
+
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      color:var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", Segoe UI, Roboto, sans-serif;
+      background:
+        radial-gradient(900px 600px at 12% 12%, rgba(229,106,166,.16), transparent 60%),
+        radial-gradient(900px 600px at 88% 18%, rgba(122,167,255,.14), transparent 60%),
+        linear-gradient(180deg, var(--bg1), var(--bg2));
+      min-height:100vh;
+    }
+
+    .wrap{ width:min(760px, 92vw); margin: 28px auto 64px; }
+    @media (max-width: 640px){
+      .wrap{ margin: 18px auto 46px; }
+    }
+
+    /* 헤더(브랜드 강조) */
+    .hero{ padding: 14px 8px 10px; }
+    .brand-row{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      margin-bottom: 10px;
+    }
+    .mono{
+      width:44px; height:44px; border-radius:16px;
+      background: linear-gradient(135deg, rgba(229,106,166,.96), rgba(122,167,255,.96));
+      box-shadow: 0 14px 30px rgba(229,106,166,.16);
+      display:flex; align-items:center; justify-content:center;
+      color:#fff; font-weight:950; letter-spacing:.8px;
+      position:relative; overflow:hidden; flex:0 0 auto;
+    }
+    .mono::after{
+      content:""; position:absolute; inset:-40%;
+      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.35), transparent 45%);
+      transform: rotate(12deg);
+    }
+    .mono span{ position:relative; z-index:1; font-size:18px; }
+
+    .brand-name{
+      font-weight:950;
+      letter-spacing: 1.2px;
+      font-size: 16px;
+      text-transform: uppercase;
+    }
+
+    .title{
+      margin: 8px 0 6px;
+      font-size: clamp(26px, 4.4vw, 36px);
+      font-weight: 950;
+      letter-spacing: -0.4px;
+    }
+    .subtitle{
+      margin:0;
+      color: var(--muted);
+      line-height: 1.65;
+      font-size: 14.5px;
+    }
+
+    /* 카드 */
+    .card{
+      margin-top: 14px;
+      background: var(--card);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(229,231,235,.78);
+      box-shadow: var(--shadow);
+      border-radius: var(--radius);
+      overflow:hidden;
+    }
+    .card-top{
+      padding: 14px 18px;
+      border-bottom: 1px solid rgba(229,231,235,.78);
+      background: linear-gradient(90deg, rgba(229,106,166,.09), rgba(122,167,255,.08));
+    }
+    .notice{
+      font-size: 13.2px;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+    .notice b{ color:#374151; }
+
+    .form{ padding: 18px; }
+    .grid{ display:grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    @media (max-width: 640px){
+      .grid{ grid-template-columns: 1fr; }
+      .form{ padding: 16px; }
+      .card-top{ padding: 13px 16px; }
+    }
+
+    .field{ display:flex; flex-direction:column; gap: 6px; }
+    label{ font-size: 14px; font-weight: 800; letter-spacing:-.1px; }
+    .hint{ font-size: 12.5px; color: var(--muted); line-height:1.45; }
+
+    input, textarea{
+      width:100%;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 12px 12px;
+      font-size: 16px;
+      outline:none;
+      background:#fff;
+      transition: box-shadow .15s ease, border-color .15s ease;
+    }
+    input:focus, textarea:focus{
+      border-color: rgba(229,106,166,.55);
+      box-shadow: 0 0 0 4px rgba(229,106,166,.13);
+    }
+    textarea{ min-height: 92px; resize: vertical; }
+    .readonly{ background: rgba(243,244,246,.75); }
+
+    .row{ display:flex; gap: 10px; align-items: stretch; }
+    .row > *{ flex:1; }
+
+    .btn{
+      border:none;
+      border-radius: 14px;
+      padding: 12px 14px;
+      font-size: 16px;
+      font-weight: 900;
+      cursor:pointer;
+      min-height: 48px;
+      user-select:none;
+      transition: filter .15s ease, transform .05s ease;
+    }
+    .btn:active{ transform: translateY(1px); }
+    .btn-outline{
+      background:#fff;
+      border:1px solid rgba(229,106,166,.42);
+      color:#b84a84;
+    }
+    .btn-primary{
+      background: linear-gradient(135deg, rgba(229,106,166,.98), rgba(122,167,255,.98));
+      color:#fff;
+      box-shadow: 0 12px 24px rgba(229,106,166,.16);
+    }
+
+    .actions{ margin-top: 16px; display:flex; gap: 10px; }
+    @media (max-width: 640px){ .actions{ flex-direction: column; } }
+
+    /* 에러 */
+    .error-box{
+      display:none;
+      border: 1px solid rgba(239,68,68,.35);
+      background: rgba(239,68,68,.06);
+      color:#991b1b;
+      padding: 12px 12px;
+      border-radius: 14px;
+      margin-bottom: 12px;
+      line-height: 1.55;
+      font-size: 14px;
+    }
+    .field.invalid input, .field.invalid textarea{
+      border-color: rgba(239,68,68,.55);
+      box-shadow: 0 0 0 4px rgba(239,68,68,.12);
+    }
+    .field .err{
+      display:none;
+      color: var(--danger);
+      font-size: 12.5px;
+      font-weight: 800;
+    }
+    .field.invalid .err{ display:block; }
+
+    .status{
+      margin-top: 12px;
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.5;
+      min-height: 22px;
+    }
+    .status.ok{ color:#0f766e; font-weight: 900; }
+    .status.bad{ color:#b91c1c; font-weight: 900; }
+
+    /* ===== 주소검색 모달(중앙) ===== */
+    .modal{
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 9999;
+    }
+    .modal.show{ display:flex; }
+    .modal-backdrop{
+      position:absolute;
+      inset:0;
+      background: rgba(17,24,39,.45);
+      backdrop-filter: blur(2px);
+    }
+    .modal-panel{
+      position: relative;
+      width: min(520px, 96vw);
+      height: min(620px, 86vh);
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 24px 80px rgba(0,0,0,.25);
+      overflow: hidden;
+      border: 1px solid rgba(229,231,235,.9);
+    }
+    @media (max-width: 640px){
+      .modal-panel{ width: 96vw; height: 86vh; border-radius: 16px; }
+    }
+    .modal-header{
+      display:flex;
+      align-items:center;
+      justify-content: space-between;
+      padding: 12px 14px;
+      background: linear-gradient(90deg, rgba(229,106,166,.10), rgba(122,167,255,.10));
+      border-bottom: 1px solid rgba(229,231,235,.85);
+      font-weight: 900;
+      letter-spacing: -.1px;
+    }
+    .modal-close{
+      border:none;
+      background: transparent;
+      font-size: 22px;
+      line-height: 1;
+      cursor:pointer;
+      padding: 6px 10px;
+      border-radius: 10px;
+    }
+    .modal-close:hover{
+      background: rgba(0,0,0,.06);
+    }
+    .modal-body{
+      width:100%;
+      height: calc(100% - 49px);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <header class="hero">
+      <div class="brand-row">
+        <div class="mono" aria-hidden="true"><span>C</span></div>
+        <div class="brand-name">COCORO SHOP</div>
+      </div>
+
+      <h1 class="title">배송 정보</h1>
+      <p class="subtitle">
+        주문하신 상품을 정확하고 안전하게 보내기 위해 배송 정보를 입력해주세요.<br/>
+        입력하신 정보는 <b>배송 처리 목적</b>으로만 사용됩니다.
+      </p>
+    </header>
+
+    <section class="card" aria-label="배송 정보 입력 폼">
+      <div class="card-top">
+        <div class="notice">
+          💡 <b>요청사항을 제외한 모든 항목은 필수</b>입니다.<br/>
+          ‘입력 완료’ 버튼을 누르면 누락된 항목을 안내해드려요.
+        </div>
+      </div>
+
+      <div class="form">
+        <div id="errorBox" class="error-box"></div>
+
+        <form id="form" novalidate>
+          <div class="grid">
+            <div class="field" id="f_customerName">
+              <label for="customerName">받는 분 성함</label>
+              <input type="text" id="customerName" placeholder="예: 홍길동" autocomplete="name" />
+              <div class="err">받는 분 성함을 입력해주세요.</div>
+            </div>
+
+            <div class="field" id="f_phone">
+              <label for="phone">연락처</label>
+              <input type="tel" id="phone" placeholder="예: 010-1234-5678" inputmode="tel" autocomplete="tel" />
+              <div class="err">연락처를 입력해주세요.</div>
+            </div>
+
+            <!-- 우편번호는 숨김(내부 저장용) -->
+            <input type="hidden" id="postcode" />
+            <!-- 전체주소도 숨김(내부 저장용) -->
+            <input type="hidden" id="fullAddress" />
+
+            <div class="field" id="f_address" style="grid-column: 1 / -1;">
+              <label for="baseAddress">주소</label>
+              <div class="row">
+                <input type="text" id="baseAddress" class="readonly" readonly placeholder="‘주소 찾기’로 검색해주세요" />
+                <button type="button" class="btn btn-outline" id="btnFindAddress">주소 찾기</button>
+              </div>
+              <div class="err">주소 찾기를 눌러 주소를 선택해주세요.</div>
+              <div class="hint">도로명 주소를 선택하면 자동으로 입력돼요.</div>
+            </div>
+
+            <div class="field" id="f_detailAddress" style="grid-column: 1 / -1;">
+              <label for="detailAddress">상세주소</label>
+              <input type="text" id="detailAddress" placeholder="동/호수, 상호명, 층수 등" autocomplete="street-address" />
+              <div class="err">상세주소를 입력해주세요.</div>
+              <div class="hint">예: 101동 1203호 / 코코로빌딩 2층</div>
+            </div>
+          </div>
+
+          <div class="field" id="f_request" style="margin-top: 14px;">
+            <label for="request">요청사항 (선택)</label>
+            <textarea id="request" placeholder="예: 부재 시 문 앞에 놓아주세요 / 경비실 맡겨주세요"></textarea>
+          </div>
+
+          <div class="actions">
+            <button type="submit" class="btn btn-primary" id="submitBtn">입력 완료</button>
+          </div>
+
+          <div id="status" class="status" aria-live="polite"></div>
+        </form>
+      </div>
+    </section>
+  </div>
+
+  <!-- 주소검색 모달(중앙) -->
+  <div class="modal" id="postcodeModal" aria-hidden="true">
+    <div class="modal-backdrop" id="postcodeBackdrop"></div>
+    <div class="modal-panel" role="dialog" aria-modal="true" aria-label="주소 검색">
+      <div class="modal-header">
+        <div>주소 검색</div>
+        <button type="button" class="modal-close" id="btnCloseModal" aria-label="닫기">×</button>
+      </div>
+      <div class="modal-body" id="postcodeEmbed"></div>
+    </div>
+  </div>
+
+  <script>
+    const submitUrl = '/api/submit';
+
+    function setStatus(msg, type){
+      const el = document.getElementById('status');
+      el.classList.remove('ok','bad');
+      if(type === 'ok') el.classList.add('ok');
+      if(type === 'bad') el.classList.add('bad');
+      el.textContent = msg || '';
+    }
+
+    function clearErrors(){
+      document.getElementById('errorBox').style.display = 'none';
+      document.getElementById('errorBox').innerHTML = '';
+      document.querySelectorAll('.field').forEach(f => f.classList.remove('invalid'));
+    }
+
+    function showErrors(missingLabels){
+      const box = document.getElementById('errorBox');
+      box.style.display = 'block';
+      box.innerHTML = `아래 항목을 확인해주세요:<br><b>• ${missingLabels.join('<br>• ')}</b>`;
+      box.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function updateFullAddress() {
+      const base = document.getElementById('baseAddress').value.trim();
+      const detail = document.getElementById('detailAddress').value.trim();
+      document.getElementById('fullAddress').value = detail ? `${base} ${detail}` : base;
+    }
+
+    function formatPhoneKR(v){
+      const digits = (v || '').replace(/\D/g,'').slice(0,11);
+      if(digits.startsWith('02')){
+        if(digits.length <= 2) return digits;
+        if(digits.length <= 5) return digits.replace(/(\d{2})(\d{1,3})/, '$1-$2');
+        if(digits.length <= 9) return digits.replace(/(\d{2})(\d{3})(\d{1,4})/, '$1-$2-$3');
+        return digits.replace(/(\d{2})(\d{4})(\d{1,4})/, '$1-$2-$3');
+      }else{
+        if(digits.length <= 3) return digits;
+        if(digits.length <= 7) return digits.replace(/(\d{3})(\d{1,4})/, '$1-$2');
+        return digits.replace(/(\d{3})(\d{3,4})(\d{1,4})/, '$1-$2-$3');
+      }
+    }
+
+    function ensureDaumLoaded(){
+      if(!(window.daum && window.daum.Postcode)){
+        setStatus('주소 검색 기능이 로드되지 않았어요. 광고차단/보안 확장프로그램을 끄고 새로고침 후 다시 시도해주세요.', 'bad');
+        return false;
+      }
+      return true;
+    }
+
+    // ===== 모달 open/close =====
+    const modal = document.getElementById('postcodeModal');
+    const embedEl = document.getElementById('postcodeEmbed');
+
+    function openModal(){
+      modal.classList.add('show');
+      modal.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeModal(){
+      modal.classList.remove('show');
+      modal.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+      embedEl.innerHTML = '';
+    }
+
+    document.getElementById('btnCloseModal').addEventListener('click', closeModal);
+    document.getElementById('postcodeBackdrop').addEventListener('click', closeModal);
+    document.addEventListener('keydown', (e) => {
+      if(e.key === 'Escape' && modal.classList.contains('show')) closeModal();
+    });
+
+    // 주소 찾기(페이지 중앙 모달 + embed)
+    function findAddressModal(){
+      if(!ensureDaumLoaded()) return;
+
+      openModal();
+      embedEl.innerHTML = '';
+
+      new daum.Postcode({
+        oncomplete: (data) => {
+          document.getElementById('postcode').value = data.zonecode || '';
+          document.getElementById('baseAddress').value = data.address || '';
+          document.getElementById('detailAddress').focus();
+          updateFullAddress();
+          closeModal();
+        },
+        onclose: () => {
+          // 사용자가 닫으면 그냥 모달 닫기
+          closeModal();
+        }
+      }).embed(embedEl);
+    }
+
+    document.getElementById('btnFindAddress').addEventListener('click', findAddressModal);
+
+    document.getElementById('detailAddress').addEventListener('input', updateFullAddress);
+    document.getElementById('phone').addEventListener('input', (e) => {
+      const after = formatPhoneKR(e.target.value);
+      if(e.target.value !== after) e.target.value = after;
+    });
+
+    document.getElementById('form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      clearErrors();
+      setStatus('');
+
+      const customerName = document.getElementById('customerName').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+      const postcode = document.getElementById('postcode').value.trim();
+      const baseAddress = document.getElementById('baseAddress').value.trim();
+      const detailAddress = document.getElementById('detailAddress').value.trim();
+      updateFullAddress();
+      const fullAddress = document.getElementById('fullAddress').value.trim();
+      const request = document.getElementById('request').value.trim();
+
+      const missing = [];
       if(!customerName){ document.getElementById('f_customerName').classList.add('invalid'); missing.push('받는 분 성함'); }
       if(!phone){ document.getElementById('f_phone').classList.add('invalid'); missing.push('연락처'); }
       if(!postcode || !baseAddress){ document.getElementById('f_address').classList.add('invalid'); missing.push('주소(주소 찾기)'); }
