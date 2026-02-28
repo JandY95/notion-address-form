@@ -51,6 +51,26 @@
     .mono span{ position:relative; z-index:1; font-size:18px; }
     .brand-name{ font-weight:950; letter-spacing:1.2px; font-size:16px; text-transform:uppercase; }
 
+    /* ✅ 상단 고정: 접수 조회 버튼 */
+    .brand-actions{ margin-left:auto; display:flex; gap:10px; align-items:center; }
+    .top-link{
+      display:inline-flex; align-items:center; justify-content:center; gap:6px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(229,106,166,.22);
+      background: rgba(255,255,255,.75);
+      text-decoration:none;
+      font-weight: 900;
+      color:#374151;
+      font-size: 14px;
+      white-space: nowrap;
+      transition: transform .05s ease, filter .15s ease;
+    }
+    .top-link:active{ transform: translateY(1px); }
+    @media (max-width: 420px){
+      .top-link{ padding: 9px 10px; font-size: 13.5px; }
+    }
+
     .title{ margin:8px 0 6px; font-size:clamp(26px, 4.4vw, 36px); font-weight:950; letter-spacing:-0.4px; }
     .subtitle{ margin:0; color:var(--muted); line-height:1.65; font-size:14.5px; }
 
@@ -177,7 +197,7 @@
     .success.show{ display:block; }
     .success-title{ font-weight:950; color:var(--ok); margin:0 0 10px; font-size:16px; }
 
-    /* 고급스러운 접수증 카드(그라데이션 보더) */
+    /* 고급스러운 접수증 카드 */
     .receipt{
       border-radius: 18px;
       padding: 16px;
@@ -271,6 +291,11 @@
       <div class="brand-row">
         <div class="mono" aria-hidden="true"><span>C</span></div>
         <div class="brand-name">COCORO SHOP</div>
+
+        <div class="brand-actions">
+          <!-- ✅ 언제든 다시 찾을 수 있는 접수 조회 버튼 -->
+          <a class="top-link" href="status.html">🔎 접수 조회</a>
+        </div>
       </div>
 
       <h1 class="title">배송 정보</h1>
@@ -365,11 +390,12 @@
 
           <div class="success-note">
             <b>수정이 필요하신 경우</b> 인스타 DM으로 <b>접수번호</b>와 수정 내용을 보내주세요.<br/>
-            조회는 “조회 페이지”에서 <b>접수번호만</b> 입력하면 확인할 수 있어요.
+            <span class="tiny">조회는 “접수 조회”에서 <b>접수번호만</b> 입력하면 확인할 수 있어요.</span>
           </div>
 
           <div class="actions" style="margin-top:12px;">
             <button type="button" class="btn btn-ghost" id="btnCopyReceipt">접수번호 복사</button>
+            <button type="button" class="btn btn-ghost" id="btnCopyStatusLink">조회 링크 복사</button>
             <button type="button" class="btn btn-ghost" id="btnOpenStatus">조회 페이지</button>
             <button type="button" class="btn btn-primary" id="btnSavePng">접수증 저장</button>
           </div>
@@ -515,12 +541,29 @@
 
     // ===== 접수 완료 화면 + 접수증 PNG =====
     let lastReceiptTitle = '';
+    let lastStatusLink = '';
+
+    async function copyTextSafe(text){
+      try{
+        await navigator.clipboard.writeText(text);
+        return true;
+      }catch{
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        ta.remove();
+        return true;
+      }
+    }
 
     function showSuccessReceipt({receiptTitle, customerName, phone, baseAddress, detailAddress, request}){
       const box = document.getElementById('successBox');
       box.classList.add('show');
 
       lastReceiptTitle = receiptTitle;
+      lastStatusLink = `${location.origin}/status.html#receipt=${encodeURIComponent(receiptTitle)}`;
 
       const now = new Date();
       const ktime = new Intl.DateTimeFormat('ko-KR', { timeZone:'Asia/Seoul', dateStyle:'medium', timeStyle:'medium' }).format(now);
@@ -528,6 +571,7 @@
         `접수번호: <b>${receiptTitle}</b><br/>접수시간: ${ktime}`;
 
       const fullAddr = (baseAddress + (detailAddress ? ' ' + detailAddress : '')).trim();
+      const statusUrl = `${location.origin}/status.html`;
 
       const grid = document.getElementById('receiptGrid');
       grid.innerHTML = `
@@ -536,6 +580,8 @@
         <div class="k">주소</div><div class="v">${fullAddr}</div>
         <div class="k">요청사항</div><div class="v">${request ? request : '<span class="sub">없음</span>'}</div>
         <div class="k">상태</div><div class="v">접수</div>
+        <div class="k">조회</div>
+        <div class="v">${statusUrl}<span class="sub">접수번호만 입력</span></div>
       `;
 
       box.scrollIntoView({ behavior:'smooth', block:'start' });
@@ -563,18 +609,14 @@
 
     async function copyReceipt(){
       if(!lastReceiptTitle) return;
-      try{
-        await navigator.clipboard.writeText(lastReceiptTitle);
-        setStatus('✅ 접수번호를 복사했습니다.', 'ok');
-      }catch{
-        const ta = document.createElement('textarea');
-        ta.value = lastReceiptTitle;
-        document.body.appendChild(ta);
-        ta.select();
-        document.execCommand('copy');
-        ta.remove();
-        setStatus('✅ 접수번호를 복사했습니다.', 'ok');
-      }
+      await copyTextSafe(lastReceiptTitle);
+      setStatus('✅ 접수번호를 복사했습니다.', 'ok');
+    }
+
+    async function copyStatusLink(){
+      if(!lastStatusLink) return;
+      await copyTextSafe(lastStatusLink);
+      setStatus('✅ 조회 링크를 복사했습니다. (카톡/메모에 붙여넣어 저장해 주세요)', 'ok');
     }
 
     function openStatusPage(){
@@ -587,6 +629,7 @@
 
     document.getElementById('btnSavePng').addEventListener('click', saveReceiptPng);
     document.getElementById('btnCopyReceipt').addEventListener('click', copyReceipt);
+    document.getElementById('btnCopyStatusLink').addEventListener('click', copyStatusLink);
     document.getElementById('btnOpenStatus').addEventListener('click', openStatusPage);
 
     // ===== 제출 =====
