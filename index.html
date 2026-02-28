@@ -7,47 +7,34 @@
 
   <!-- 카카오(다음) 우편번호 서비스 -->
   <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+  <!-- 접수 확인증 PNG 저장용 -->
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
   <style>
     :root{
-      --bg1:#fff7fb;
-      --bg2:#f6fbff;
+      --bg1:#fff7fb; --bg2:#f6fbff;
       --card:rgba(255,255,255,.92);
-      --text:#111827;
-      --muted:#6b7280;
-      --line:#e5e7eb;
-      --accent:#e56aa6;
-      --accent2:#7aa7ff;
-      --danger:#ef4444;
+      --text:#111827; --muted:#6b7280; --line:#e5e7eb;
+      --accent:#e56aa6; --accent2:#7aa7ff;
+      --danger:#ef4444; --ok:#0f766e;
       --shadow: 0 14px 48px rgba(17,24,39,.10);
       --radius: 18px;
     }
-
     *{ box-sizing:border-box; }
     body{
-      margin:0;
-      color:var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", Segoe UI, Roboto, sans-serif;
+      margin:0; color:var(--text);
+      font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR",Segoe UI,Roboto,sans-serif;
       background:
         radial-gradient(900px 600px at 12% 12%, rgba(229,106,166,.16), transparent 60%),
         radial-gradient(900px 600px at 88% 18%, rgba(122,167,255,.14), transparent 60%),
         linear-gradient(180deg, var(--bg1), var(--bg2));
       min-height:100vh;
     }
-
     .wrap{ width:min(760px, 92vw); margin: 28px auto 64px; }
-    @media (max-width: 640px){
-      .wrap{ margin: 18px auto 46px; }
-    }
+    @media (max-width: 640px){ .wrap{ margin: 18px auto 46px; } }
 
-    /* 헤더(브랜드 강조) */
-    .hero{ padding: 14px 8px 10px; }
-    .brand-row{
-      display:flex;
-      align-items:center;
-      gap:12px;
-      margin-bottom: 10px;
-    }
+    .hero{ padding:14px 8px 10px; }
+    .brand-row{ display:flex; align-items:center; gap:12px; margin-bottom:10px; }
     .mono{
       width:44px; height:44px; border-radius:16px;
       background: linear-gradient(135deg, rgba(229,106,166,.96), rgba(122,167,255,.96));
@@ -62,30 +49,14 @@
       transform: rotate(12deg);
     }
     .mono span{ position:relative; z-index:1; font-size:18px; }
-
     .brand-name{
-      font-weight:950;
-      letter-spacing: 1.2px;
-      font-size: 16px;
-      text-transform: uppercase;
+      font-weight:950; letter-spacing:1.2px; font-size:16px; text-transform:uppercase;
     }
+    .title{ margin:8px 0 6px; font-size:clamp(26px, 4.4vw, 36px); font-weight:950; letter-spacing:-0.4px; }
+    .subtitle{ margin:0; color:var(--muted); line-height:1.65; font-size:14.5px; }
 
-    .title{
-      margin: 8px 0 6px;
-      font-size: clamp(26px, 4.4vw, 36px);
-      font-weight: 950;
-      letter-spacing: -0.4px;
-    }
-    .subtitle{
-      margin:0;
-      color: var(--muted);
-      line-height: 1.65;
-      font-size: 14.5px;
-    }
-
-    /* 카드 */
     .card{
-      margin-top: 14px;
+      margin-top:14px;
       background: var(--card);
       backdrop-filter: blur(10px);
       border: 1px solid rgba(229,231,235,.78);
@@ -94,136 +65,158 @@
       overflow:hidden;
     }
     .card-top{
-      padding: 14px 18px;
+      padding:14px 18px;
       border-bottom: 1px solid rgba(229,231,235,.78);
       background: linear-gradient(90deg, rgba(229,106,166,.09), rgba(122,167,255,.08));
     }
-    .notice{
-      font-size: 13.2px;
-      color: var(--muted);
-      line-height: 1.55;
-    }
+    .notice{ font-size:13.2px; color:var(--muted); line-height:1.55; }
     .notice b{ color:#374151; }
-
-    .form{ padding: 18px; }
-    .grid{ display:grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .form{ padding:18px; }
+    .grid{ display:grid; grid-template-columns: 1fr 1fr; gap:14px; }
     @media (max-width: 640px){
       .grid{ grid-template-columns: 1fr; }
-      .form{ padding: 16px; }
-      .card-top{ padding: 13px 16px; }
+      .form{ padding:16px; }
+      .card-top{ padding:13px 16px; }
     }
 
-    .field{ display:flex; flex-direction:column; gap: 6px; }
-    label{ font-size: 14px; font-weight: 800; letter-spacing:-.1px; }
-    .hint{ font-size: 12.5px; color: var(--muted); line-height:1.45; }
+    .field{ display:flex; flex-direction:column; gap:6px; }
+    label{ font-size:14px; font-weight:800; letter-spacing:-.1px; }
+    .hint{ font-size:12.5px; color:var(--muted); line-height:1.45; }
 
     input, textarea{
-      width:100%;
-      border: 1px solid var(--line);
-      border-radius: 14px;
-      padding: 12px 12px;
-      font-size: 16px;
-      outline:none;
-      background:#fff;
+      width:100%; border:1px solid var(--line);
+      border-radius:14px; padding:12px 12px;
+      font-size:16px; outline:none; background:#fff;
       transition: box-shadow .15s ease, border-color .15s ease;
     }
     input:focus, textarea:focus{
       border-color: rgba(229,106,166,.55);
       box-shadow: 0 0 0 4px rgba(229,106,166,.13);
     }
-    textarea{ min-height: 92px; resize: vertical; }
+    textarea{ min-height:92px; resize:vertical; }
     .readonly{ background: rgba(243,244,246,.75); }
 
-    /* ✅ row 레이아웃: 버튼이 커지는 원인(1:1 flex)을 제거하고,
-       입력칸은 크게(grow), 버튼은 작게(compact) */
-    .row{ display:flex; gap: 10px; align-items: stretch; }
-    .row .grow{ flex: 1 1 auto; min-width: 0; }
-    .row .btn-compact{ flex: 0 0 auto; width: 132px; padding: 12px 10px; }
-
-    /* 아주 좁은 모바일에서는 버튼이 옆에서 찌그러지지 않게 아래로 */
+    /* 주소 row: 버튼 컴팩트 */
+    .row{ display:flex; gap:10px; align-items:stretch; }
+    .row .grow{ flex:1 1 auto; min-width:0; }
+    .row .btn-compact{ flex:0 0 auto; width:132px; padding:12px 10px; }
     @media (max-width: 420px){
-      .row{ flex-direction: column; }
-      .row .btn-compact{ width: 100%; }
+      .row{ flex-direction:column; }
+      .row .btn-compact{ width:100%; }
     }
 
     .btn{
-      border:none;
-      border-radius: 14px;
-      font-size: 16px;
-      font-weight: 900;
-      cursor:pointer;
-      min-height: 48px;
-      user-select:none;
+      border:none; border-radius:14px;
+      font-size:16px; font-weight:900; cursor:pointer;
+      min-height:48px; user-select:none;
       transition: filter .15s ease, transform .05s ease;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      gap: 6px;
+      display:flex; align-items:center; justify-content:center; gap:6px;
     }
     .btn:active{ transform: translateY(1px); }
-    .btn-outline{
-      background:#fff;
-      border:1px solid rgba(229,106,166,.42);
-      color:#b84a84;
-    }
+    .btn-outline{ background:#fff; border:1px solid rgba(229,106,166,.42); color:#b84a84; }
     .btn-primary{
       background: linear-gradient(135deg, rgba(229,106,166,.98), rgba(122,167,255,.98));
-      color:#fff;
-      box-shadow: 0 12px 24px rgba(229,106,166,.16);
-      padding: 12px 14px;
+      color:#fff; box-shadow:0 12px 24px rgba(229,106,166,.16);
+      padding:12px 14px;
+    }
+    .btn-ghost{
+      background:#fff;
+      border:1px solid rgba(229,231,235,.9);
+      color:#374151;
     }
 
-    .actions{ margin-top: 16px; display:flex; gap: 10px; }
-    @media (max-width: 640px){ .actions{ flex-direction: column; } }
+    .actions{ margin-top:16px; display:flex; gap:10px; flex-wrap:wrap; }
+    @media (max-width: 640px){ .actions{ flex-direction:column; } }
 
-    /* 에러 */
     .error-box{
       display:none;
-      border: 1px solid rgba(239,68,68,.35);
+      border:1px solid rgba(239,68,68,.35);
       background: rgba(239,68,68,.06);
       color:#991b1b;
-      padding: 12px 12px;
-      border-radius: 14px;
-      margin-bottom: 12px;
-      line-height: 1.55;
-      font-size: 14px;
+      padding:12px 12px;
+      border-radius:14px;
+      margin-bottom:12px;
+      line-height:1.55;
+      font-size:14px;
     }
     .field.invalid input, .field.invalid textarea{
       border-color: rgba(239,68,68,.55);
       box-shadow: 0 0 0 4px rgba(239,68,68,.12);
     }
-    .field .err{
-      display:none;
-      color: var(--danger);
-      font-size: 12.5px;
-      font-weight: 800;
-    }
+    .field .err{ display:none; color:var(--danger); font-size:12.5px; font-weight:800; }
     .field.invalid .err{ display:block; }
 
-    .status{
+    .status{ margin-top:12px; font-size:14px; color:var(--muted); line-height:1.5; min-height:22px; }
+    .status.ok{ color:var(--ok); font-weight:900; }
+    .status.bad{ color:#b91c1c; font-weight:900; }
+
+    /* 오배송 방지 체크 */
+    .checkline{
       margin-top: 12px;
-      font-size: 14px;
-      color: var(--muted);
-      line-height: 1.5;
-      min-height: 22px;
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+      padding: 10px 12px;
+      border: 1px solid rgba(229,231,235,.9);
+      border-radius: 14px;
+      background: rgba(255,255,255,.75);
     }
-    .status.ok{ color:#0f766e; font-weight: 900; }
-    .status.bad{ color:#b91c1c; font-weight: 900; }
+    .checkline input{ margin-top:3px; width:18px; height:18px; }
+    .checkline .checktext{ font-size: 13.5px; color:#374151; line-height:1.45; }
+    .checkline .checktext b{ color:#111827; }
+
+    /* 접수 완료 화면 */
+    .success{
+      display:none;
+      margin-top: 14px;
+      padding: 14px;
+      border-radius: 18px;
+      border: 1px solid rgba(15,118,110,.20);
+      background: rgba(15,118,110,.06);
+    }
+    .success.show{ display:block; }
+    .success-title{ font-weight:950; color:var(--ok); margin:0 0 10px; font-size:16px; }
+    .receipt{
+      background:#fff;
+      border: 1px solid rgba(229,231,235,.95);
+      border-radius: 16px;
+      padding: 14px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.06);
+    }
+    .receipt-top{
+      display:flex; justify-content:space-between; gap:10px; align-items:flex-start;
+      border-bottom:1px dashed rgba(229,231,235,1);
+      padding-bottom:10px; margin-bottom:10px;
+    }
+    .receipt-brand{ font-weight:950; letter-spacing:1.1px; text-transform:uppercase; }
+    .receipt-meta{ font-size:12.5px; color:var(--muted); text-align:right; line-height:1.35; }
+    .receipt-grid{
+      display:grid;
+      grid-template-columns: 110px 1fr;
+      gap: 8px 10px;
+      font-size: 14px;
+    }
+    .receipt-grid .k{ color:var(--muted); }
+    .receipt-grid .v{ color:#111827; font-weight:700; word-break:break-word; }
+
+    .success-note{
+      margin-top: 10px;
+      font-size: 13px;
+      color: #374151;
+      line-height: 1.45;
+    }
+    .success-note b{ color:#111827; }
+    .tiny{ font-size:12.5px; color:var(--muted); }
 
     /* ===== 주소검색 모달(중앙) ===== */
     .modal{
-      position: fixed;
-      inset: 0;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 16px;
-      z-index: 9999;
+      position: fixed; inset:0;
+      display:none; align-items:center; justify-content:center;
+      padding:16px; z-index:9999;
     }
     .modal.show{ display:flex; }
     .modal-backdrop{
-      position:absolute;
-      inset:0;
+      position:absolute; inset:0;
       background: rgba(17,24,39,.45);
       backdrop-filter: blur(2px);
     }
@@ -231,39 +224,29 @@
       position: relative;
       width: min(520px, 96vw);
       height: min(620px, 86vh);
-      background: #fff;
+      background:#fff;
       border-radius: 18px;
       box-shadow: 0 24px 80px rgba(0,0,0,.25);
-      overflow: hidden;
+      overflow:hidden;
       border: 1px solid rgba(229,231,235,.9);
     }
     @media (max-width: 640px){
-      .modal-panel{ width: 96vw; height: 86vh; border-radius: 16px; }
+      .modal-panel{ width:96vw; height:86vh; border-radius:16px; }
     }
     .modal-header{
-      display:flex;
-      align-items:center;
-      justify-content: space-between;
-      padding: 12px 14px;
+      display:flex; align-items:center; justify-content:space-between;
+      padding:12px 14px;
       background: linear-gradient(90deg, rgba(229,106,166,.10), rgba(122,167,255,.10));
       border-bottom: 1px solid rgba(229,231,235,.85);
-      font-weight: 900;
-      letter-spacing: -.1px;
+      font-weight:900;
     }
     .modal-close{
-      border:none;
-      background: transparent;
-      font-size: 22px;
-      line-height: 1;
-      cursor:pointer;
-      padding: 6px 10px;
-      border-radius: 10px;
+      border:none; background:transparent;
+      font-size:22px; cursor:pointer;
+      padding:6px 10px; border-radius:10px;
     }
     .modal-close:hover{ background: rgba(0,0,0,.06); }
-    .modal-body{
-      width:100%;
-      height: calc(100% - 49px);
-    }
+    .modal-body{ width:100%; height: calc(100% - 49px); }
   </style>
 </head>
 
@@ -308,18 +291,14 @@
               <div class="hint">휴대폰 또는 지역번호 포함 번호를 입력해주세요.</div>
             </div>
 
-            <!-- 우편번호는 숨김(내부 저장용) -->
             <input type="hidden" id="postcode" />
-            <!-- 전체주소도 숨김(내부 저장용) -->
             <input type="hidden" id="fullAddress" />
 
             <div class="field" id="f_address" style="grid-column: 1 / -1;">
               <label for="baseAddress">주소</label>
               <div class="row">
                 <input type="text" id="baseAddress" class="readonly grow" readonly placeholder="‘주소 찾기’로 검색해주세요" />
-                <button type="button" class="btn btn-outline btn-compact" id="btnFindAddress">
-                  🔎 주소 찾기
-                </button>
+                <button type="button" class="btn btn-outline btn-compact" id="btnFindAddress">🔎 주소 찾기</button>
               </div>
               <div class="err">주소 찾기를 눌러 주소를 선택해주세요.</div>
               <div class="hint">도로명 주소를 선택하면 자동으로 입력돼요.</div>
@@ -338,17 +317,50 @@
             <textarea id="request" placeholder="예: 부재 시 문 앞에 놓아주세요 / 경비실 맡겨주세요"></textarea>
           </div>
 
+          <!-- 오배송 방지 확인 체크 -->
+          <div class="checkline" id="f_confirm">
+            <input type="checkbox" id="confirmCheck" />
+            <div class="checktext">
+              <b>오배송 방지 확인</b> — 입력한 성함/연락처/주소가 정확합니다.
+              <div class="tiny">입력 완료 전 꼭 한 번 확인해주세요.</div>
+            </div>
+          </div>
+
           <div class="actions">
             <button type="submit" class="btn btn-primary" id="submitBtn">입력 완료</button>
           </div>
 
           <div id="status" class="status" aria-live="polite"></div>
         </form>
+
+        <!-- 접수 완료 블록 -->
+        <div class="success" id="successBox">
+          <p class="success-title">✅ 접수 완료</p>
+
+          <div class="receipt" id="receiptCard">
+            <div class="receipt-top">
+              <div class="receipt-brand">COCORO SHOP</div>
+              <div class="receipt-meta" id="receiptMeta"></div>
+            </div>
+            <div class="receipt-grid" id="receiptGrid"></div>
+          </div>
+
+          <div class="success-note">
+            <b>수정이 필요하신 경우</b> 인스타 DM으로 <b>접수번호</b>와 수정 내용을 보내주세요.
+            <div class="tiny">조회는 “조회 페이지”에서 <b>접수번호 + 연락처 뒤 4자리</b>로 확인할 수 있어요.</div>
+          </div>
+
+          <div class="actions" style="margin-top:12px;">
+            <button type="button" class="btn btn-ghost" id="btnCopyReceipt">접수번호 복사</button>
+            <button type="button" class="btn btn-ghost" id="btnOpenStatus">조회 페이지</button>
+            <button type="button" class="btn btn-primary" id="btnSavePng">확인증 PNG 저장</button>
+          </div>
+        </div>
       </div>
     </section>
   </div>
 
-  <!-- 주소검색 모달(중앙) -->
+  <!-- 주소검색 모달 -->
   <div class="modal" id="postcodeModal" aria-hidden="true">
     <div class="modal-backdrop" id="postcodeBackdrop"></div>
     <div class="modal-panel" role="dialog" aria-modal="true" aria-label="주소 검색">
@@ -363,6 +375,7 @@
   <script>
     const submitUrl = '/api/submit';
 
+    // ===== 공통 UI =====
     function setStatus(msg, type){
       const el = document.getElementById('status');
       el.classList.remove('ok','bad');
@@ -370,13 +383,12 @@
       if(type === 'bad') el.classList.add('bad');
       el.textContent = msg || '';
     }
-
     function clearErrors(){
       document.getElementById('errorBox').style.display = 'none';
       document.getElementById('errorBox').innerHTML = '';
       document.querySelectorAll('.field').forEach(f => f.classList.remove('invalid'));
+      document.getElementById('f_confirm').style.borderColor = 'rgba(229,231,235,.9)';
     }
-
     function showErrors(missingLabels){
       const box = document.getElementById('errorBox');
       box.style.display = 'block';
@@ -384,59 +396,50 @@
       box.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
-    // ===== 전화번호 처리(검증 + 저장용 포맷) =====
-    function onlyDigits(v){
-      return String(v || '').replace(/\D/g, '');
-    }
+    // ===== 전화번호 =====
+    function onlyDigits(v){ return String(v || '').replace(/\D/g, ''); }
 
-    function validatePhoneKR(digits){
-      if (!digits) return { ok: false, msg: '연락처를 입력해주세요.' };
-
-      if (digits.startsWith('010')) {
-        if (digits.length === 11) return { ok: true };
-        return { ok: false, msg: '휴대폰 번호(010)는 11자리로 입력해주세요. 예) 010-1234-5678' };
+    function validatePhoneKR(d){
+      if(!d) return { ok:false, msg:'연락처를 입력해주세요.' };
+      if(d.startsWith('010')){
+        if(d.length === 11) return { ok:true };
+        return { ok:false, msg:'휴대폰 번호(010)는 11자리로 입력해주세요. 예) 010-1234-5678' };
       }
-      if (/^01[1|6|7|8|9]/.test(digits)) {
-        if (digits.length === 10 || digits.length === 11) return { ok: true };
-        return { ok: false, msg: '휴대폰 번호를 끝까지 입력해주세요. 예) 011-123-4567' };
+      if(/^01[1|6|7|8|9]/.test(d)){
+        if(d.length === 10 || d.length === 11) return { ok:true };
+        return { ok:false, msg:'휴대폰 번호를 끝까지 입력해주세요. 예) 011-123-4567' };
       }
-
-      if (digits.startsWith('070')) {
-        if (digits.length === 11) return { ok: true };
-        return { ok: false, msg: '070 번호를 끝까지 입력해주세요. 예) 070-1234-5678' };
+      if(d.startsWith('070')){
+        if(d.length === 11) return { ok:true };
+        return { ok:false, msg:'070 번호를 끝까지 입력해주세요. 예) 070-1234-5678' };
       }
-
-      if (digits.startsWith('02')) {
-        if (digits.length === 9 || digits.length === 10) return { ok: true };
-        return { ok: false, msg: '서울(02) 번호를 끝까지 입력해주세요. 예) 02-123-4567 또는 02-1234-5678' };
+      if(d.startsWith('02')){
+        if(d.length === 9 || d.length === 10) return { ok:true };
+        return { ok:false, msg:'서울(02) 번호를 끝까지 입력해주세요. 예) 02-123-4567 또는 02-1234-5678' };
       }
-
-      if (/^0\d{2}/.test(digits)) {
-        if (digits.length === 10 || digits.length === 11) return { ok: true };
-        return { ok: false, msg: '지역번호 포함 전화번호를 끝까지 입력해주세요. 예) 031-123-4567' };
+      if(/^0\d{2}/.test(d)){
+        if(d.length === 10 || d.length === 11) return { ok:true };
+        return { ok:false, msg:'지역번호 포함 전화번호를 끝까지 입력해주세요. 예) 031-123-4567' };
       }
-
-      return { ok: false, msg: '연락처 형식이 올바르지 않아요. 휴대폰 또는 지역번호 포함 번호로 입력해주세요.' };
+      return { ok:false, msg:'연락처 형식이 올바르지 않아요. 휴대폰 또는 지역번호 포함 번호로 입력해주세요.' };
     }
 
     function formatPhoneKRSafe(v){
       const d = onlyDigits(v);
-
-      if (d.startsWith('02')) {
-        if (d.length <= 2) return d;
-        if (d.length <= 5) return d.replace(/(\d{2})(\d{1,3})/, '$1-$2');
-        if (d.length === 9) return d.replace(/(\d{2})(\d{3})(\d{4})/, '$1-$2-$3');
-        if (d.length >= 10) return d.slice(0,10).replace(/(\d{2})(\d{4})(\d{4})/, '$1-$2-$3');
+      if(d.startsWith('02')){
+        if(d.length <= 2) return d;
+        if(d.length <= 5) return d.replace(/(\d{2})(\d{1,3})/, '$1-$2');
+        if(d.length === 9) return d.replace(/(\d{2})(\d{3})(\d{4})/, '$1-$2-$3');
+        if(d.length >= 10) return d.slice(0,10).replace(/(\d{2})(\d{4})(\d{4})/, '$1-$2-$3');
         return d;
       }
-
-      if (d.length <= 3) return d;
-      if (d.length <= 7) return d.replace(/(\d{3})(\d{1,4})/, '$1-$2');
+      if(d.length <= 3) return d;
+      if(d.length <= 7) return d.replace(/(\d{3})(\d{1,4})/, '$1-$2');
       return d.replace(/(\d{3})(\d{3,4})(\d{4}).*/, '$1-$2-$3');
     }
 
-    // ===== 주소/모달 =====
-    function updateFullAddress() {
+    // ===== 주소 / 모달 =====
+    function updateFullAddress(){
       const base = document.getElementById('baseAddress').value.trim();
       const detail = document.getElementById('detailAddress').value.trim();
       document.getElementById('fullAddress').value = detail ? `${base} ${detail}` : base;
@@ -455,16 +458,15 @@
 
     function openModal(){
       modal.classList.add('show');
-      modal.setAttribute('aria-hidden', 'false');
+      modal.setAttribute('aria-hidden','false');
       document.body.style.overflow = 'hidden';
     }
     function closeModal(){
       modal.classList.remove('show');
-      modal.setAttribute('aria-hidden', 'true');
+      modal.setAttribute('aria-hidden','true');
       document.body.style.overflow = '';
       embedEl.innerHTML = '';
     }
-
     document.getElementById('btnCloseModal').addEventListener('click', closeModal);
     document.getElementById('postcodeBackdrop').addEventListener('click', closeModal);
     document.addEventListener('keydown', (e) => {
@@ -473,10 +475,8 @@
 
     function findAddressModal(){
       if(!ensureDaumLoaded()) return;
-
       openModal();
       embedEl.innerHTML = '';
-
       new daum.Postcode({
         oncomplete: (data) => {
           document.getElementById('postcode').value = data.zonecode || '';
@@ -488,16 +488,105 @@
         onclose: () => closeModal()
       }).embed(embedEl);
     }
-
     document.getElementById('btnFindAddress').addEventListener('click', findAddressModal);
 
     document.getElementById('detailAddress').addEventListener('input', updateFullAddress);
-
     document.getElementById('phone').addEventListener('input', (e) => {
       const after = formatPhoneKRSafe(e.target.value);
       if(e.target.value !== after) e.target.value = after;
     });
 
+    // ===== 접수 완료 화면 + 확인증 PNG =====
+    let lastReceiptTitle = '';
+    let lastPhoneLast4 = '';
+
+    function maskName(name){
+      if(!name) return '';
+      const t = name.trim();
+      if(t.length <= 1) return t;
+      return t[0] + '＊'.repeat(Math.min(3, t.length-1));
+    }
+    function maskDetail(detail){
+      if(!detail) return '';
+      const t = detail.trim();
+      if(t.length <= 2) return t[0] + '＊';
+      return t.slice(0,2) + '＊'.repeat(Math.min(6, t.length-2));
+    }
+
+    function showSuccessReceipt({receiptTitle, customerName, phone, baseAddress, detailAddress}){
+      const box = document.getElementById('successBox');
+      box.classList.add('show');
+
+      lastReceiptTitle = receiptTitle;
+      const digits = onlyDigits(phone);
+      lastPhoneLast4 = digits.slice(-4);
+
+      const now = new Date();
+      const ktime = new Intl.DateTimeFormat('ko-KR', { timeZone:'Asia/Seoul', dateStyle:'medium', timeStyle:'medium' }).format(now);
+      document.getElementById('receiptMeta').innerHTML =
+        `접수번호: <b>${receiptTitle}</b><br/>접수시간: ${ktime}`;
+
+      const grid = document.getElementById('receiptGrid');
+      grid.innerHTML = `
+        <div class="k">받는 분</div><div class="v">${maskName(customerName)}</div>
+        <div class="k">연락처</div><div class="v">****-****-${lastPhoneLast4}</div>
+        <div class="k">주소</div><div class="v">${baseAddress}<br/><span class="tiny">${maskDetail(detailAddress)}</span></div>
+        <div class="k">상태</div><div class="v">접수</div>
+      `;
+
+      box.scrollIntoView({ behavior:'smooth', block:'start' });
+    }
+
+    async function saveReceiptPng(){
+      const card = document.getElementById('receiptCard');
+      if(!window.html2canvas){
+        setStatus('확인증 저장 기능을 불러오지 못했어요. 새로고침 후 다시 시도해주세요.', 'bad');
+        return;
+      }
+      setStatus('확인증을 생성 중입니다…', '');
+      const canvas = await html2canvas(card, { scale: 2, backgroundColor: '#ffffff' });
+      const url = canvas.toDataURL('image/png');
+
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `COCORO_SHOP_접수확인증_${lastReceiptTitle || 'receipt'}.png`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+
+      setStatus('✅ 확인증 PNG 저장이 준비되었습니다.', 'ok');
+    }
+
+    async function copyReceipt(){
+      if(!lastReceiptTitle) return;
+      try{
+        await navigator.clipboard.writeText(lastReceiptTitle);
+        setStatus('✅ 접수번호를 복사했습니다.', 'ok');
+      }catch{
+        const ta = document.createElement('textarea');
+        ta.value = lastReceiptTitle;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        ta.remove();
+        setStatus('✅ 접수번호를 복사했습니다.', 'ok');
+      }
+    }
+
+    function openStatusPage(){
+      if(!lastReceiptTitle){
+        window.location.href = 'status.html';
+        return;
+      }
+      // 접수번호는 hash로 넘겨서(서버로그 안 남게) 미리 채워주기
+      window.location.href = `status.html#receipt=${encodeURIComponent(lastReceiptTitle)}`;
+    }
+
+    document.getElementById('btnSavePng').addEventListener('click', saveReceiptPng);
+    document.getElementById('btnCopyReceipt').addEventListener('click', copyReceipt);
+    document.getElementById('btnOpenStatus').addEventListener('click', openStatusPage);
+
+    // ===== 제출 =====
     document.getElementById('form').addEventListener('submit', async (e) => {
       e.preventDefault();
       clearErrors();
@@ -515,6 +604,7 @@
       updateFullAddress();
       const fullAddress = document.getElementById('fullAddress').value.trim();
       const request = document.getElementById('request').value.trim();
+      const confirmed = document.getElementById('confirmCheck').checked;
 
       const missing = [];
 
@@ -522,20 +612,21 @@
         document.getElementById('f_customerName').classList.add('invalid');
         missing.push('받는 분 성함');
       }
-
       if(!phoneCheck.ok){
         document.getElementById('f_phone').classList.add('invalid');
         missing.push('연락처(형식 확인)');
       }
-
       if(!postcode || !baseAddress){
         document.getElementById('f_address').classList.add('invalid');
         missing.push('주소(주소 찾기)');
       }
-
       if(!detailAddress){
         document.getElementById('f_detailAddress').classList.add('invalid');
         missing.push('상세주소');
+      }
+      if(!confirmed){
+        document.getElementById('f_confirm').style.borderColor = 'rgba(239,68,68,.55)';
+        missing.push('오배송 방지 확인(체크)');
       }
 
       if(missing.length){
@@ -572,10 +663,14 @@
 
         if (response.ok) {
           setStatus(`✅ 입력 완료! ${result.receiptTitle ? `(접수번호: ${result.receiptTitle})` : ''}`, 'ok');
-          document.getElementById('form').reset();
-          document.getElementById('postcode').value = '';
-          document.getElementById('baseAddress').value = '';
-          document.getElementById('fullAddress').value = '';
+          // 접수 완료 화면 표시(폼은 유지)
+          showSuccessReceipt({
+            receiptTitle: result.receiptTitle || '',
+            customerName,
+            phone: phoneToSave,
+            baseAddress,
+            detailAddress
+          });
         } else {
           setStatus(`❌ 저장에 실패했어요. (${result.error || '오류'})`, 'bad');
         }
