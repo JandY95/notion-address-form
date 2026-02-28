@@ -73,9 +73,7 @@
       box-shadow: 0 0 0 4px rgba(229,106,166,.13);
     }
     .row{ display:grid; grid-template-columns: 1fr 170px; gap:12px; margin-top:12px; }
-    @media (max-width: 520px){
-      .row{ grid-template-columns: 1fr; }
-    }
+    @media (max-width: 520px){ .row{ grid-template-columns: 1fr; } }
     .btn{
       border:none; border-radius:14px;
       padding:12px 14px;
@@ -85,15 +83,6 @@
       color:#fff;
       box-shadow:0 12px 24px rgba(229,106,166,.16);
     }
-    .btn-ghost{
-      border:1px solid rgba(229,231,235,.9);
-      border-radius:14px;
-      padding:12px 14px;
-      font-size:15px; font-weight:900;
-      cursor:pointer; min-height:48px;
-      background:#fff; color:#374151;
-    }
-
     .status{ margin-top:12px; font-size:14px; min-height:22px; color:var(--muted); }
     .status.ok{ color:var(--ok); font-weight:900; }
     .status.bad{ color:#b91c1c; font-weight:900; }
@@ -136,7 +125,6 @@
     }
 
     .tiny{ margin-top:10px; color:var(--muted); font-size:12.5px; line-height:1.45; }
-    .actions2{ margin-top:12px; display:flex; gap:10px; flex-wrap:wrap; }
   </style>
 </head>
 <body>
@@ -149,7 +137,7 @@
 
     <div class="card">
       <div class="card-top">
-        💡 접수번호는 고객님께 발급된 접수증에 적혀 있어요.
+        💡 접수번호는 접수증에 적혀 있어요. (접수번호만 입력하면 됩니다)
       </div>
       <div class="form">
         <label>접수번호</label>
@@ -175,13 +163,8 @@
             <div class="step" data-s="보류">보류</div>
           </div>
 
-          <div class="actions2" id="trackingActions" style="display:none;">
-            <button class="btn-ghost" id="btnCopyTracking">송장번호 복사</button>
-            <button class="btn" id="btnCjTrack">CJ대한통운 배송조회</button>
-          </div>
-
-          <div class="tiny" id="trackingHint" style="display:none;">
-            CJ대한통운 배송조회 페이지가 열리면, 복사된 송장번호를 붙여넣고 조회해주세요.
+          <div class="tiny">
+            수정이 필요하시면 인스타 DM으로 <b>접수번호</b>와 수정 내용을 보내주세요.
           </div>
         </div>
       </div>
@@ -189,8 +172,6 @@
   </div>
 
   <script>
-    const CJ_TRACKING_URL = 'https://www.cjlogistics.com/ko/tool/parcel/tracking';
-
     const msg = (t, type) => {
       const el = document.getElementById('msg');
       el.classList.remove('ok','bad');
@@ -214,26 +195,10 @@
       if(el) el.classList.add('on');
     }
 
-    async function copyTextSafe(text){
-      try{
-        await navigator.clipboard.writeText(text);
-        return true;
-      }catch{
-        const ta = document.createElement('textarea');
-        ta.value = text;
-        document.body.appendChild(ta);
-        ta.select();
-        document.execCommand('copy');
-        ta.remove();
-        return true;
-      }
-    }
-
     async function check(){
       const receipt = document.getElementById('receipt').value.trim();
+
       document.getElementById('result').classList.remove('show');
-      document.getElementById('trackingActions').style.display = 'none';
-      document.getElementById('trackingHint').style.display = 'none';
       msg('');
 
       if(!receipt){
@@ -268,24 +233,6 @@
 
       setStepper(data.status || '접수');
       document.getElementById('result').classList.add('show');
-
-      if(data.tracking){
-        const tracking = String(data.tracking).replace(/\s/g,'');
-        const digits = tracking.replace(/\D/g,''); // CJ 페이지 안내가 "숫자만"이라서
-        document.getElementById('trackingActions').style.display = 'flex';
-        document.getElementById('trackingHint').style.display = 'block';
-
-        document.getElementById('btnCopyTracking').onclick = async () => {
-          await copyTextSafe(digits || tracking);
-          msg('✅ 송장번호를 복사했습니다.', 'ok');
-        };
-
-        document.getElementById('btnCjTrack').onclick = async () => {
-          await copyTextSafe(digits || tracking);
-          window.open(CJ_TRACKING_URL, '_blank');
-          msg('✅ CJ대한통운 페이지를 열었어요. 복사된 송장번호를 붙여넣고 조회해주세요.', 'ok');
-        };
-      }
     }
 
     document.getElementById('btnCheck').addEventListener('click', check);
