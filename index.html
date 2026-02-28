@@ -7,7 +7,7 @@
 
   <!-- 카카오(다음) 우편번호 서비스 -->
   <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
-  <!-- 접수 확인증 PNG 저장용 -->
+  <!-- 접수증 PNG 저장용 -->
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
   <style>
@@ -49,9 +49,8 @@
       transform: rotate(12deg);
     }
     .mono span{ position:relative; z-index:1; font-size:18px; }
-    .brand-name{
-      font-weight:950; letter-spacing:1.2px; font-size:16px; text-transform:uppercase;
-    }
+    .brand-name{ font-weight:950; letter-spacing:1.2px; font-size:16px; text-transform:uppercase; }
+
     .title{ margin:8px 0 6px; font-size:clamp(26px, 4.4vw, 36px); font-weight:950; letter-spacing:-0.4px; }
     .subtitle{ margin:0; color:var(--muted); line-height:1.65; font-size:14.5px; }
 
@@ -72,6 +71,7 @@
     .notice{ font-size:13.2px; color:var(--muted); line-height:1.55; }
     .notice b{ color:#374151; }
     .form{ padding:18px; }
+
     .grid{ display:grid; grid-template-columns: 1fr 1fr; gap:14px; }
     @media (max-width: 640px){
       .grid{ grid-template-columns: 1fr; }
@@ -96,7 +96,6 @@
     textarea{ min-height:92px; resize:vertical; }
     .readonly{ background: rgba(243,244,246,.75); }
 
-    /* 주소 row: 버튼 컴팩트 */
     .row{ display:flex; gap:10px; align-items:stretch; }
     .row .grow{ flex:1 1 auto; min-width:0; }
     .row .btn-compact{ flex:0 0 auto; width:132px; padding:12px 10px; }
@@ -164,40 +163,57 @@
     .checkline input{ margin-top:3px; width:18px; height:18px; }
     .checkline .checktext{ font-size: 13.5px; color:#374151; line-height:1.45; }
     .checkline .checktext b{ color:#111827; }
+    .tiny{ font-size:12.5px; color:var(--muted); }
 
-    /* 접수 완료 화면 */
+    /* ===== 접수 완료/접수증 ===== */
     .success{
       display:none;
       margin-top: 14px;
       padding: 14px;
       border-radius: 18px;
-      border: 1px solid rgba(15,118,110,.20);
-      background: rgba(15,118,110,.06);
+      border: 1px solid rgba(15,118,110,.18);
+      background: rgba(15,118,110,.05);
     }
     .success.show{ display:block; }
     .success-title{ font-weight:950; color:var(--ok); margin:0 0 10px; font-size:16px; }
+
+    /* 고급스러운 접수증 카드(그라데이션 보더) */
     .receipt{
-      background:#fff;
-      border: 1px solid rgba(229,231,235,.95);
-      border-radius: 16px;
-      padding: 14px;
-      box-shadow: 0 10px 30px rgba(0,0,0,.06);
+      border-radius: 18px;
+      padding: 16px;
+      background:
+        linear-gradient(#ffffff,#ffffff) padding-box,
+        linear-gradient(135deg, rgba(229,106,166,.55), rgba(122,167,255,.45)) border-box;
+      border: 1px solid transparent;
+      box-shadow: 0 14px 42px rgba(0,0,0,.08);
     }
     .receipt-top{
       display:flex; justify-content:space-between; gap:10px; align-items:flex-start;
-      border-bottom:1px dashed rgba(229,231,235,1);
-      padding-bottom:10px; margin-bottom:10px;
+      padding-bottom:12px; margin-bottom:12px;
+      border-bottom: 1px dashed rgba(229,231,235,1);
     }
-    .receipt-brand{ font-weight:950; letter-spacing:1.1px; text-transform:uppercase; }
-    .receipt-meta{ font-size:12.5px; color:var(--muted); text-align:right; line-height:1.35; }
+    .receipt-brand{
+      display:flex; align-items:center; gap:10px;
+      font-weight:950; letter-spacing:1.1px; text-transform:uppercase;
+    }
+    .receipt-badge{
+      width:30px; height:30px; border-radius:12px;
+      background: linear-gradient(135deg, rgba(229,106,166,.96), rgba(122,167,255,.96));
+      color:#fff; display:flex; align-items:center; justify-content:center;
+      font-weight:950;
+    }
+    .receipt-meta{
+      font-size:12.5px; color:var(--muted); text-align:right; line-height:1.4;
+    }
     .receipt-grid{
       display:grid;
       grid-template-columns: 110px 1fr;
-      gap: 8px 10px;
-      font-size: 14px;
+      gap: 9px 10px;
+      font-size: 14.5px;
     }
     .receipt-grid .k{ color:var(--muted); }
-    .receipt-grid .v{ color:#111827; font-weight:700; word-break:break-word; }
+    .receipt-grid .v{ color:#111827; font-weight:800; word-break:break-word; }
+    .receipt-grid .v .sub{ display:block; margin-top:4px; color:#374151; font-weight:700; }
 
     .success-note{
       margin-top: 10px;
@@ -206,7 +222,6 @@
       line-height: 1.45;
     }
     .success-note b{ color:#111827; }
-    .tiny{ font-size:12.5px; color:var(--muted); }
 
     /* ===== 주소검색 모달(중앙) ===== */
     .modal{
@@ -280,7 +295,8 @@
           <div class="grid">
             <div class="field" id="f_customerName">
               <label for="customerName">받는 분 성함</label>
-              <input type="text" id="customerName" placeholder="예: 홍길동" autocomplete="name" />
+              <input type="text" id="customerName" placeholder="예: 김서연" autocomplete="name" />
+              <div class="hint">실명 입력을 권장해요. (오배송/반송 방지)</div>
               <div class="err">받는 분 성함을 입력해주세요.</div>
             </div>
 
@@ -317,7 +333,6 @@
             <textarea id="request" placeholder="예: 부재 시 문 앞에 놓아주세요 / 경비실 맡겨주세요"></textarea>
           </div>
 
-          <!-- 오배송 방지 확인 체크 -->
           <div class="checkline" id="f_confirm">
             <input type="checkbox" id="confirmCheck" />
             <div class="checktext">
@@ -333,27 +348,30 @@
           <div id="status" class="status" aria-live="polite"></div>
         </form>
 
-        <!-- 접수 완료 블록 -->
+        <!-- 접수 완료 + 접수증 -->
         <div class="success" id="successBox">
           <p class="success-title">✅ 접수 완료</p>
 
           <div class="receipt" id="receiptCard">
             <div class="receipt-top">
-              <div class="receipt-brand">COCORO SHOP</div>
+              <div class="receipt-brand">
+                <div class="receipt-badge">C</div>
+                <div>COCORO SHOP</div>
+              </div>
               <div class="receipt-meta" id="receiptMeta"></div>
             </div>
             <div class="receipt-grid" id="receiptGrid"></div>
           </div>
 
           <div class="success-note">
-            <b>수정이 필요하신 경우</b> 인스타 DM으로 <b>접수번호</b>와 수정 내용을 보내주세요.
-            <div class="tiny">조회는 “조회 페이지”에서 <b>접수번호 + 연락처 뒤 4자리</b>로 확인할 수 있어요.</div>
+            <b>수정이 필요하신 경우</b> 인스타 DM으로 <b>접수번호</b>와 수정 내용을 보내주세요.<br/>
+            조회는 “조회 페이지”에서 <b>접수번호만</b> 입력하면 확인할 수 있어요.
           </div>
 
           <div class="actions" style="margin-top:12px;">
             <button type="button" class="btn btn-ghost" id="btnCopyReceipt">접수번호 복사</button>
             <button type="button" class="btn btn-ghost" id="btnOpenStatus">조회 페이지</button>
-            <button type="button" class="btn btn-primary" id="btnSavePng">확인증 PNG 저장</button>
+            <button type="button" class="btn btn-primary" id="btnSavePng">접수증 저장</button>
           </div>
         </div>
       </div>
@@ -375,7 +393,6 @@
   <script>
     const submitUrl = '/api/submit';
 
-    // ===== 공통 UI =====
     function setStatus(msg, type){
       const el = document.getElementById('status');
       el.classList.remove('ok','bad');
@@ -438,7 +455,7 @@
       return d.replace(/(\d{3})(\d{3,4})(\d{4}).*/, '$1-$2-$3');
     }
 
-    // ===== 주소 / 모달 =====
+    // ===== 주소/모달 =====
     function updateFullAddress(){
       const base = document.getElementById('baseAddress').value.trim();
       const detail = document.getElementById('detailAddress').value.trim();
@@ -496,41 +513,28 @@
       if(e.target.value !== after) e.target.value = after;
     });
 
-    // ===== 접수 완료 화면 + 확인증 PNG =====
+    // ===== 접수 완료 화면 + 접수증 PNG =====
     let lastReceiptTitle = '';
-    let lastPhoneLast4 = '';
 
-    function maskName(name){
-      if(!name) return '';
-      const t = name.trim();
-      if(t.length <= 1) return t;
-      return t[0] + '＊'.repeat(Math.min(3, t.length-1));
-    }
-    function maskDetail(detail){
-      if(!detail) return '';
-      const t = detail.trim();
-      if(t.length <= 2) return t[0] + '＊';
-      return t.slice(0,2) + '＊'.repeat(Math.min(6, t.length-2));
-    }
-
-    function showSuccessReceipt({receiptTitle, customerName, phone, baseAddress, detailAddress}){
+    function showSuccessReceipt({receiptTitle, customerName, phone, baseAddress, detailAddress, request}){
       const box = document.getElementById('successBox');
       box.classList.add('show');
 
       lastReceiptTitle = receiptTitle;
-      const digits = onlyDigits(phone);
-      lastPhoneLast4 = digits.slice(-4);
 
       const now = new Date();
       const ktime = new Intl.DateTimeFormat('ko-KR', { timeZone:'Asia/Seoul', dateStyle:'medium', timeStyle:'medium' }).format(now);
       document.getElementById('receiptMeta').innerHTML =
         `접수번호: <b>${receiptTitle}</b><br/>접수시간: ${ktime}`;
 
+      const fullAddr = (baseAddress + (detailAddress ? ' ' + detailAddress : '')).trim();
+
       const grid = document.getElementById('receiptGrid');
       grid.innerHTML = `
-        <div class="k">받는 분</div><div class="v">${maskName(customerName)}</div>
-        <div class="k">연락처</div><div class="v">****-****-${lastPhoneLast4}</div>
-        <div class="k">주소</div><div class="v">${baseAddress}<br/><span class="tiny">${maskDetail(detailAddress)}</span></div>
+        <div class="k">받는 분</div><div class="v">${customerName}</div>
+        <div class="k">연락처</div><div class="v">${phone}</div>
+        <div class="k">주소</div><div class="v">${fullAddr}</div>
+        <div class="k">요청사항</div><div class="v">${request ? request : '<span class="sub">없음</span>'}</div>
         <div class="k">상태</div><div class="v">접수</div>
       `;
 
@@ -540,21 +544,21 @@
     async function saveReceiptPng(){
       const card = document.getElementById('receiptCard');
       if(!window.html2canvas){
-        setStatus('확인증 저장 기능을 불러오지 못했어요. 새로고침 후 다시 시도해주세요.', 'bad');
+        setStatus('접수증 저장 기능을 불러오지 못했어요. 새로고침 후 다시 시도해주세요.', 'bad');
         return;
       }
-      setStatus('확인증을 생성 중입니다…', '');
+      setStatus('접수증을 생성 중입니다…', '');
       const canvas = await html2canvas(card, { scale: 2, backgroundColor: '#ffffff' });
       const url = canvas.toDataURL('image/png');
 
       const a = document.createElement('a');
       a.href = url;
-      a.download = `COCORO_SHOP_접수확인증_${lastReceiptTitle || 'receipt'}.png`;
+      a.download = `COCORO_SHOP_접수증_${lastReceiptTitle || 'receipt'}.png`;
       document.body.appendChild(a);
       a.click();
       a.remove();
 
-      setStatus('✅ 확인증 PNG 저장이 준비되었습니다.', 'ok');
+      setStatus('✅ 접수증 저장이 준비되었습니다.', 'ok');
     }
 
     async function copyReceipt(){
@@ -578,7 +582,6 @@
         window.location.href = 'status.html';
         return;
       }
-      // 접수번호는 hash로 넘겨서(서버로그 안 남게) 미리 채워주기
       window.location.href = `status.html#receipt=${encodeURIComponent(lastReceiptTitle)}`;
     }
 
@@ -608,22 +611,10 @@
 
       const missing = [];
 
-      if(!customerName){
-        document.getElementById('f_customerName').classList.add('invalid');
-        missing.push('받는 분 성함');
-      }
-      if(!phoneCheck.ok){
-        document.getElementById('f_phone').classList.add('invalid');
-        missing.push('연락처(형식 확인)');
-      }
-      if(!postcode || !baseAddress){
-        document.getElementById('f_address').classList.add('invalid');
-        missing.push('주소(주소 찾기)');
-      }
-      if(!detailAddress){
-        document.getElementById('f_detailAddress').classList.add('invalid');
-        missing.push('상세주소');
-      }
+      if(!customerName){ document.getElementById('f_customerName').classList.add('invalid'); missing.push('받는 분 성함'); }
+      if(!phoneCheck.ok){ document.getElementById('f_phone').classList.add('invalid'); missing.push('연락처(형식 확인)'); }
+      if(!postcode || !baseAddress){ document.getElementById('f_address').classList.add('invalid'); missing.push('주소(주소 찾기)'); }
+      if(!detailAddress){ document.getElementById('f_detailAddress').classList.add('invalid'); missing.push('상세주소'); }
       if(!confirmed){
         document.getElementById('f_confirm').style.borderColor = 'rgba(239,68,68,.55)';
         missing.push('오배송 방지 확인(체크)');
@@ -663,13 +654,14 @@
 
         if (response.ok) {
           setStatus(`✅ 입력 완료! ${result.receiptTitle ? `(접수번호: ${result.receiptTitle})` : ''}`, 'ok');
-          // 접수 완료 화면 표시(폼은 유지)
+
           showSuccessReceipt({
             receiptTitle: result.receiptTitle || '',
             customerName,
             phone: phoneToSave,
             baseAddress,
-            detailAddress
+            detailAddress,
+            request
           });
         } else {
           setStatus(`❌ 저장에 실패했어요. (${result.error || '오류'})`, 'bad');
