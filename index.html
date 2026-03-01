@@ -51,7 +51,6 @@
     .mono span{ position:relative; z-index:1; font-size:18px; }
     .brand-name{ font-weight:950; letter-spacing:1.2px; font-size:16px; text-transform:uppercase; }
 
-    /* ✅ 상단 고정: 접수 조회 버튼 */
     .brand-actions{ margin-left:auto; display:flex; gap:10px; align-items:center; }
     .top-link{
       display:inline-flex; align-items:center; justify-content:center; gap:6px;
@@ -67,9 +66,6 @@
       transition: transform .05s ease, filter .15s ease;
     }
     .top-link:active{ transform: translateY(1px); }
-    @media (max-width: 420px){
-      .top-link{ padding: 9px 10px; font-size: 13.5px; }
-    }
 
     .title{ margin:8px 0 6px; font-size:clamp(26px, 4.4vw, 36px); font-weight:950; letter-spacing:-0.4px; }
     .subtitle{ margin:0; color:var(--muted); line-height:1.65; font-size:14.5px; }
@@ -169,7 +165,6 @@
     .status.ok{ color:var(--ok); font-weight:900; }
     .status.bad{ color:#b91c1c; font-weight:900; }
 
-    /* 오배송 방지 체크 */
     .checkline{
       margin-top: 12px;
       display:flex;
@@ -186,6 +181,8 @@
     .tiny{ font-size:12.5px; color:var(--muted); }
 
     /* ===== 접수 완료/접수증 ===== */
+    .hidden{ display:none !important; }
+
     .success{
       display:none;
       margin-top: 14px;
@@ -197,7 +194,6 @@
     .success.show{ display:block; }
     .success-title{ font-weight:950; color:var(--ok); margin:0 0 10px; font-size:16px; }
 
-    /* 고급스러운 접수증 카드 */
     .receipt{
       border-radius: 18px;
       padding: 16px;
@@ -234,6 +230,15 @@
     .receipt-grid .k{ color:var(--muted); }
     .receipt-grid .v{ color:#111827; font-weight:800; word-break:break-word; }
     .receipt-grid .v .sub{ display:block; margin-top:4px; color:#374151; font-weight:700; }
+
+    .receipt-link{
+      color:#111827;
+      font-weight:950;
+      text-decoration: none;
+      border-bottom: 2px solid rgba(229,106,166,.35);
+      padding-bottom: 1px;
+    }
+    .receipt-link:hover{ border-bottom-color: rgba(229,106,166,.65); }
 
     .success-note{
       margin-top: 10px;
@@ -293,7 +298,6 @@
         <div class="brand-name">COCORO SHOP</div>
 
         <div class="brand-actions">
-          <!-- ✅ 언제든 다시 찾을 수 있는 접수 조회 버튼 -->
           <a class="top-link" href="status.html">🔎 접수 조회</a>
         </div>
       </div>
@@ -306,7 +310,7 @@
     </header>
 
     <section class="card" aria-label="배송 정보 입력 폼">
-      <div class="card-top">
+      <div class="card-top" id="cardTop">
         <div class="notice">
           💡 <b>요청사항을 제외한 모든 항목은 필수</b>입니다.<br/>
           ‘입력 완료’ 버튼을 누르면 누락된 항목을 안내해드려요.
@@ -314,66 +318,69 @@
       </div>
 
       <div class="form">
-        <div id="errorBox" class="error-box"></div>
+        <!-- ✅ 제출 후에는 이 영역을 숨김 -->
+        <div id="formSection">
+          <div id="errorBox" class="error-box"></div>
 
-        <form id="form" novalidate>
-          <div class="grid">
-            <div class="field" id="f_customerName">
-              <label for="customerName">받는 분 성함</label>
-              <input type="text" id="customerName" placeholder="예: 김서연" autocomplete="name" />
-              <div class="hint">실명 입력을 권장해요. (오배송/반송 방지)</div>
-              <div class="err">받는 분 성함을 입력해주세요.</div>
-            </div>
-
-            <div class="field" id="f_phone">
-              <label for="phone">연락처</label>
-              <input type="tel" id="phone" placeholder="예: 010-1234-5678 / 02-123-4567" inputmode="tel" autocomplete="tel" />
-              <div class="err">연락처 형식을 확인해주세요.</div>
-              <div class="hint">휴대폰 또는 지역번호 포함 번호를 입력해주세요.</div>
-            </div>
-
-            <input type="hidden" id="postcode" />
-            <input type="hidden" id="fullAddress" />
-
-            <div class="field" id="f_address" style="grid-column: 1 / -1;">
-              <label for="baseAddress">주소</label>
-              <div class="row">
-                <input type="text" id="baseAddress" class="readonly grow" readonly placeholder="‘주소 찾기’로 검색해주세요" />
-                <button type="button" class="btn btn-outline btn-compact" id="btnFindAddress">🔎 주소 찾기</button>
+          <form id="form" novalidate>
+            <div class="grid">
+              <div class="field" id="f_customerName">
+                <label for="customerName">받는 분 성함</label>
+                <input type="text" id="customerName" placeholder="예: 김서연" autocomplete="name" />
+                <div class="hint">실명 입력을 권장해요. (오배송/반송 방지)</div>
+                <div class="err">받는 분 성함을 입력해주세요.</div>
               </div>
-              <div class="err">주소 찾기를 눌러 주소를 선택해주세요.</div>
-              <div class="hint">도로명 주소를 선택하면 자동으로 입력되요.</div>
+
+              <div class="field" id="f_phone">
+                <label for="phone">연락처</label>
+                <input type="tel" id="phone" placeholder="예: 010-1234-5678 / 02-123-4567" inputmode="tel" autocomplete="tel" />
+                <div class="err">연락처 형식을 확인해주세요.</div>
+                <div class="hint">휴대폰 또는 지역번호 포함 번호를 입력해주세요.</div>
+              </div>
+
+              <input type="hidden" id="postcode" />
+              <input type="hidden" id="fullAddress" />
+
+              <div class="field" id="f_address" style="grid-column: 1 / -1;">
+                <label for="baseAddress">주소</label>
+                <div class="row">
+                  <input type="text" id="baseAddress" class="readonly grow" readonly placeholder="‘주소 찾기’로 검색해주세요" />
+                  <button type="button" class="btn btn-outline btn-compact" id="btnFindAddress">🔎 주소 찾기</button>
+                </div>
+                <div class="err">주소 찾기를 눌러 주소를 선택해주세요.</div>
+                <div class="hint">도로명 주소를 선택하면 자동으로 입력돼요.</div>
+              </div>
+
+              <div class="field" id="f_detailAddress" style="grid-column: 1 / -1;">
+                <label for="detailAddress">상세주소</label>
+                <input type="text" id="detailAddress" placeholder="동/호수, 상호명, 층수 등" autocomplete="street-address" />
+                <div class="err">상세주소를 입력해주세요.</div>
+                <div class="hint">예: 101동 1203호 / 코코로빌딩 2층</div>
+              </div>
             </div>
 
-            <div class="field" id="f_detailAddress" style="grid-column: 1 / -1;">
-              <label for="detailAddress">상세주소</label>
-              <input type="text" id="detailAddress" placeholder="동/호수, 상호명, 층수 등" autocomplete="street-address" />
-              <div class="err">상세주소를 입력해주세요.</div>
-              <div class="hint">예: 101동 1203호 / 코코로빌딩 2층</div>
+            <div class="field" id="f_request" style="margin-top: 14px;">
+              <label for="request">요청사항 (선택)</label>
+              <textarea id="request" placeholder="예: 부재 시 문 앞에 놓아주세요 / 경비실 맡겨주세요"></textarea>
             </div>
-          </div>
 
-          <div class="field" id="f_request" style="margin-top: 14px;">
-            <label for="request">요청사항 (선택)</label>
-            <textarea id="request" placeholder="예: 부재 시 문 앞에 놓아주세요 / 경비실 맡겨주세요"></textarea>
-          </div>
-
-          <div class="checkline" id="f_confirm">
-            <input type="checkbox" id="confirmCheck" />
-            <div class="checktext">
-              <b>오배송 방지 확인</b> — 입력한 성함/연락처/주소가 정확합니다.
-              <div class="tiny">입력 완료 전 꼭 한 번 확인해주세요.</div>
+            <div class="checkline" id="f_confirm">
+              <input type="checkbox" id="confirmCheck" />
+              <div class="checktext">
+                <b>오배송 방지 확인</b> — 입력한 성함/연락처/주소가 정확합니다.
+                <div class="tiny">입력 완료 전 꼭 한 번 확인해주세요.</div>
+              </div>
             </div>
-          </div>
 
-          <div class="actions">
-            <button type="submit" class="btn btn-primary" id="submitBtn">입력 완료</button>
-          </div>
+            <div class="actions">
+              <button type="submit" class="btn btn-primary" id="submitBtn">입력 완료</button>
+            </div>
 
-          <div id="status" class="status" aria-live="polite"></div>
-        </form>
+            <div id="status" class="status" aria-live="polite"></div>
+          </form>
+        </div>
 
-        <!-- 접수 완료 + 접수증 -->
+        <!-- 접수 완료 + 접수증 (제출 후 이것만 보이게) -->
         <div class="success" id="successBox">
           <p class="success-title">✅ 접수 완료</p>
 
@@ -395,8 +402,7 @@
 
           <div class="actions" style="margin-top:12px;">
             <button type="button" class="btn btn-ghost" id="btnCopyReceipt">접수번호 복사</button>
-            <button type="button" class="btn btn-ghost" id="btnCopyStatusLink">조회 링크 복사</button>
-            <button type="button" class="btn btn-ghost" id="btnOpenStatus">조회 페이지</button>
+            <button type="button" class="btn btn-ghost" id="btnOpenStatus">접수 조회</button>
             <button type="button" class="btn btn-primary" id="btnSavePng">접수증 저장</button>
           </div>
         </div>
@@ -421,19 +427,25 @@
 
     function setStatus(msg, type){
       const el = document.getElementById('status');
+      if(!el) return;
       el.classList.remove('ok','bad');
       if(type === 'ok') el.classList.add('ok');
       if(type === 'bad') el.classList.add('bad');
       el.textContent = msg || '';
     }
     function clearErrors(){
-      document.getElementById('errorBox').style.display = 'none';
-      document.getElementById('errorBox').innerHTML = '';
+      const errorBox = document.getElementById('errorBox');
+      if(errorBox){
+        errorBox.style.display = 'none';
+        errorBox.innerHTML = '';
+      }
       document.querySelectorAll('.field').forEach(f => f.classList.remove('invalid'));
-      document.getElementById('f_confirm').style.borderColor = 'rgba(229,231,235,.9)';
+      const confirmWrap = document.getElementById('f_confirm');
+      if(confirmWrap) confirmWrap.style.borderColor = 'rgba(229,231,235,.9)';
     }
     function showErrors(missingLabels){
       const box = document.getElementById('errorBox');
+      if(!box) return;
       box.style.display = 'block';
       box.innerHTML = `아래 항목을 확인해주세요:<br><b>• ${missingLabels.join('<br>• ')}</b>`;
       box.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -539,9 +551,9 @@
       if(e.target.value !== after) e.target.value = after;
     });
 
-    // ===== 접수 완료 화면 + 접수증 PNG =====
+    // ===== 접수 완료/접수증 =====
     let lastReceiptTitle = '';
-    let lastStatusLink = '';
+    let lastStatusHref = '';
 
     async function copyTextSafe(text){
       try{
@@ -558,67 +570,6 @@
       }
     }
 
-    function showSuccessReceipt({receiptTitle, customerName, phone, baseAddress, detailAddress, request}){
-      const box = document.getElementById('successBox');
-      box.classList.add('show');
-
-      lastReceiptTitle = receiptTitle;
-      lastStatusLink = `${location.origin}/status.html#receipt=${encodeURIComponent(receiptTitle)}`;
-
-      const now = new Date();
-      const ktime = new Intl.DateTimeFormat('ko-KR', { timeZone:'Asia/Seoul', dateStyle:'medium', timeStyle:'medium' }).format(now);
-      document.getElementById('receiptMeta').innerHTML =
-        `접수번호: <b>${receiptTitle}</b><br/>접수시간: ${ktime}`;
-
-      const fullAddr = (baseAddress + (detailAddress ? ' ' + detailAddress : '')).trim();
-      const statusUrl = `${location.origin}/status.html`;
-
-      const grid = document.getElementById('receiptGrid');
-      grid.innerHTML = `
-        <div class="k">받는 분</div><div class="v">${customerName}</div>
-        <div class="k">연락처</div><div class="v">${phone}</div>
-        <div class="k">주소</div><div class="v">${fullAddr}</div>
-        <div class="k">요청사항</div><div class="v">${request ? request : '<span class="sub">없음</span>'}</div>
-        <div class="k">상태</div><div class="v">접수</div>
-        <div class="k">조회</div>
-        <div class="v">${statusUrl}<span class="sub">접수번호만 입력</span></div>
-      `;
-
-      box.scrollIntoView({ behavior:'smooth', block:'start' });
-    }
-
-    async function saveReceiptPng(){
-      const card = document.getElementById('receiptCard');
-      if(!window.html2canvas){
-        setStatus('접수증 저장 기능을 불러오지 못했어요. 새로고침 후 다시 시도해주세요.', 'bad');
-        return;
-      }
-      setStatus('접수증을 생성 중입니다…', '');
-      const canvas = await html2canvas(card, { scale: 2, backgroundColor: '#ffffff' });
-      const url = canvas.toDataURL('image/png');
-
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `COCORO_SHOP_접수증_${lastReceiptTitle || 'receipt'}.png`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-
-      setStatus('✅ 접수증 저장이 준비되었습니다.', 'ok');
-    }
-
-    async function copyReceipt(){
-      if(!lastReceiptTitle) return;
-      await copyTextSafe(lastReceiptTitle);
-      setStatus('✅ 접수번호를 복사했습니다.', 'ok');
-    }
-
-    async function copyStatusLink(){
-      if(!lastStatusLink) return;
-      await copyTextSafe(lastStatusLink);
-      setStatus('✅ 조회 링크를 복사했습니다. (카톡/메모에 붙여넣어 저장해 주세요)', 'ok');
-    }
-
     function openStatusPage(){
       if(!lastReceiptTitle){
         window.location.href = 'status.html';
@@ -627,9 +578,81 @@
       window.location.href = `status.html#receipt=${encodeURIComponent(lastReceiptTitle)}`;
     }
 
+    function showOnlyReceipt(){
+      // 폼/안내 영역 숨김, 접수 완료만 표시
+      document.getElementById('formSection').classList.add('hidden');
+      document.getElementById('cardTop').classList.add('hidden');
+      const success = document.getElementById('successBox');
+      success.classList.add('show');
+      success.scrollIntoView({ behavior:'smooth', block:'start' });
+    }
+
+    function showSuccessReceipt({receiptTitle, customerName, phone, baseAddress, detailAddress, request}){
+      lastReceiptTitle = receiptTitle;
+      lastStatusHref = `${location.origin}/status.html#receipt=${encodeURIComponent(receiptTitle)}`;
+
+      const now = new Date();
+      const ktime = new Intl.DateTimeFormat('ko-KR', { timeZone:'Asia/Seoul', dateStyle:'medium', timeStyle:'medium' }).format(now);
+      document.getElementById('receiptMeta').innerHTML =
+        `접수번호: <b>${receiptTitle}</b><br/>접수시간: ${ktime}`;
+
+      const fullAddr = (baseAddress + (detailAddress ? ' ' + detailAddress : '')).trim();
+
+      // ✅ 화면에서는 “접수 조회”만 보이게(링크)
+      // ✅ PNG 저장 시에는 자동으로 URL만 나오게(클릭 불가라서)
+      const grid = document.getElementById('receiptGrid');
+      grid.innerHTML = `
+        <div class="k">받는 분</div><div class="v">${customerName}</div>
+        <div class="k">연락처</div><div class="v">${phone}</div>
+        <div class="k">주소</div><div class="v">${fullAddr}</div>
+        <div class="k">요청사항</div><div class="v">${request ? request : '<span class="sub">없음</span>'}</div>
+        <div class="k">상태</div><div class="v">접수</div>
+        <div class="k">접수 조회</div>
+        <div class="v" id="receiptQueryCell">
+          <a class="receipt-link" href="${lastStatusHref}">접수 조회</a>
+        </div>
+      `;
+
+      showOnlyReceipt();
+    }
+
+    async function saveReceiptPng(){
+      const card = document.getElementById('receiptCard');
+      const queryCell = document.getElementById('receiptQueryCell');
+
+      if(!window.html2canvas){
+        alert('접수증 저장 기능을 불러오지 못했어요. 새로고침 후 다시 시도해주세요.');
+        return;
+      }
+
+      // ✅ PNG에서는 클릭이 안 되니까, 저장 직전에 URL만 노출되게 바꿨다가 저장 후 복구
+      let backup = '';
+      if(queryCell){
+        backup = queryCell.innerHTML;
+        queryCell.innerHTML = `<span>${location.origin}/status.html</span><span class="sub">접수번호만 입력</span>`;
+      }
+
+      const canvas = await html2canvas(card, { scale: 2, backgroundColor: '#ffffff' });
+      const url = canvas.toDataURL('image/png');
+
+      if(queryCell) queryCell.innerHTML = backup;
+
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `COCORO_SHOP_접수증_${lastReceiptTitle || 'receipt'}.png`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    }
+
+    async function copyReceipt(){
+      if(!lastReceiptTitle) return;
+      await copyTextSafe(lastReceiptTitle);
+      alert('접수번호를 복사했어요.');
+    }
+
     document.getElementById('btnSavePng').addEventListener('click', saveReceiptPng);
     document.getElementById('btnCopyReceipt').addEventListener('click', copyReceipt);
-    document.getElementById('btnCopyStatusLink').addEventListener('click', copyStatusLink);
     document.getElementById('btnOpenStatus').addEventListener('click', openStatusPage);
 
     // ===== 제출 =====
@@ -696,8 +719,6 @@
         const result = await response.json();
 
         if (response.ok) {
-          setStatus(`✅ 입력 완료! ${result.receiptTitle ? `(접수번호: ${result.receiptTitle})` : ''}`, 'ok');
-
           showSuccessReceipt({
             receiptTitle: result.receiptTitle || '',
             customerName,
