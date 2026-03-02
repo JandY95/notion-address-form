@@ -1030,7 +1030,7 @@ try { result = raw ? JSON.parse(raw) : {}; } catch { result = {}; }
           // 폼 화면 숨기고 접수증 화면만 보여주기(요청사항)
           showReceiptScreen();
         } else {
-          setStatus(`❌ 저장 실패: ${result.error || 'Notion save failed'}`, 'bad');
+          setStatus(`❌ 저장 실패: ${result.error || raw || '오류'}`, 'bad');
         }
       } catch (error) {
         setStatus('❌ 네트워크 오류가 발생했어요. 잠시 후 다시 시도해주세요.', 'bad');
