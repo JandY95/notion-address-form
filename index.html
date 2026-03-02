@@ -418,6 +418,21 @@
     }
     .modal-body{ flex:1; }
     #postcodeWrap{ width:100%; height:100%; }
+  
+  /* 주소 찾기 버튼만 고정폭으로 */
+.addr-row .btn-find{
+  flex: 0 0 auto;   /* 늘어나지 않게 */
+  width: 140px;     /* 버튼 폭(원하는 값으로 조절 가능: 120~160 추천) */
+  padding: 12px 12px;
+}
+
+/* 모바일에서는 버튼이 아래로 내려가면서 100% */
+@media (max-width: 640px){
+  .addr-row .btn-find{
+    width: 100%;
+  }
+}
+  
   </style>
 </head>
 
@@ -497,10 +512,10 @@
 
             <div class="field" id="f_address" style="grid-column: 1 / -1;">
               <label for="baseAddress">주소</label>
-              <div class="row">
-                <input type="text" id="baseAddress" class="readonly" readonly placeholder="‘주소 찾기’로 검색해주세요" />
-                <button type="button" class="btn btn-outline" onclick="openPostcode()">🔎 주소 찾기</button>
-              </div>
+              <div class="row addr-row">
+  <input type="text" id="baseAddress" class="readonly" readonly placeholder="‘주소 찾기’로 검색해주세요" />
+  <button type="button" class="btn btn-outline btn-find" onclick="openPostcode()">🔎 주소 찾기</button>
+</div>
               <div class="hint">도로명 주소를 선택하면 자동으로 입력돼요.</div>
               <div class="err">주소 찾기를 눌러 주소를 선택해주세요.</div>
             </div>
