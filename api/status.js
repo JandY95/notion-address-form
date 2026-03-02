@@ -50,7 +50,10 @@ export default async function handler(req, res) {
     const props = page.properties || {};
 
     const receiptTitle = titleText(props[PROP_RECEIPT]);
-    const statusName = props[PROP_STATUS]?.select?.name || "접수";
+    const statusName =
+  props[PROP_STATUS]?.status?.name ||   // ✅ Status 타입
+  props[PROP_STATUS]?.select?.name ||   // ✅ Select 타입(혹시 몰라서)
+  "접수";
 
     // 송장번호가 Text면 rich_text로 읽히는 경우가 많아서 rich_text 우선
     const trackingNumber =
