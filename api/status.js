@@ -1,83 +1,70 @@
-import { Client } from '@notionhq/client';
+import { Client } from "@notionhq/client";
 
 const notion = new Client({ auth: process.env.NOTION_TOKEN });
+const DB_ID = process.env.NOTION_DATABASE_ID;
 
-function readText(prop) {
-  if (!prop) return '';
-  if (prop.type === 'title') return (prop.title || []).map(t => t.plain_text).join('');
-  if (prop.type === 'rich_text') return (prop.rich_text || []).map(t => t.plain_text).join('');
-  if (prop.type === 'number') return String(prop.number ?? '');
-  return '';
+// ✅ 너 Notion DB 속성명과 1:1로 맞춰줘야 함 (현재 대화 기준 최종명)
+const PROP_RECEIPT = "접수번호";   // Title
+const PROP_STATUS  = "처리상태";   // Select
+const PROP_TRACK   = "송장번호";   // Text or Rich text
+
+function titleText(p) {
+  const t = p?.title || [];
+  return t.map(x => x.plain_text || "").join("").trim();
 }
-
-function readStatus(prop) {
-  if (!prop) return '';
-  if (prop.type === 'status') return prop.status?.name || '';
-  if (prop.type === 'select') return prop.select?.name || '';
-  return '';
-}
-
-function digitsOnly(v){ return String(v || '').replace(/\D/g,''); }
-
-function extractLast4FromReceipt(receiptTitle){
-  const parts = String(receiptTitle || '').split('-');
-  const last = parts[parts.length - 1] || '';
-  return /^\d{4}$/.test(last) ? last : '';
+function richText(p) {
+  const t = p?.rich_text || [];
+  return t.map(x => x.plain_text || "").join("").trim();
 }
 
 export default async function handler(req, res) {
+  res.setHeader("Cache-Control", "no-store");
+
+  // ✅ GET/POST 둘 다 허용 (status.html은 GET을 씀)
+  if (req.method !== "GET" && req.method !== "POST") {
+    return res.status(405).json({ error: "Method not allowed" });
+  }
+
+  const receipt =
+    (req.method === "GET" ? req.query?.receipt : req.body?.receipt) || "";
+
+  if (!String(receipt).trim()) {
+    return res.status(400).json({ error: "Missing receipt" });
+  }
+
   try {
-    if ((req.method || 'GET') !== 'POST') {
-      return res.status(405).json({ error: 'Method not allowed' });
-    }
-
-    const body = (typeof req.body === 'string') ? JSON.parse(req.body) : req.body;
-    const receiptTitle = (body?.receiptTitle || '').trim();
-
-    if (!receiptTitle) return res.status(400).json({ error: 'Missing receiptTitle' });
-
-    const last4FromReceipt = extractLast4FromReceipt(receiptTitle);
-    if (!last4FromReceipt) {
-      return res.status(400).json({ error: '접수번호 형식이 올바르지 않습니다. (마지막 4자리가 숫자여야 해요)' });
-    }
-
-    const result = await notion.databases.query({
-      database_id: process.env.NOTION_DATABASE_ID,
+    const q = await notion.databases.query({
+      database_id: DB_ID,
       filter: {
-        property: '접수번호', // 노션 속성명
-        title: { equals: receiptTitle }
-      }
+        property: PROP_RECEIPT,
+        title: { equals: String(receipt).trim() },
+      },
+      page_size: 1,
     });
 
-    if (!result.results?.length) {
-      return res.status(404).json({ error: '해당 접수번호를 찾을 수 없습니다.' });
+    if (!q.results?.length) {
+      return res.status(404).json({ error: "Not found" });
     }
 
-    const page = result.results[0];
+    const page = q.results[0];
     const props = page.properties || {};
 
-    const phone = readText(props['연락처']); // 노션 속성명
-    const storedLast4 = digitsOnly(phone).slice(-4);
+    const receiptTitle = titleText(props[PROP_RECEIPT]);
+    const statusName = props[PROP_STATUS]?.select?.name || "접수";
 
-    if (storedLast4 !== last4FromReceipt) {
-      return res.status(403).json({ error: '접수번호 확인에 실패했습니다. (접수번호를 다시 확인해주세요)' });
-    }
-
-    const status = readStatus(props['처리상태']) || '접수'; // 노션 속성명
-
-    let tracking = '';
-    if (props['송장번호']) tracking = readText(props['송장번호']);
-    if (!tracking && props['운송장번호']) tracking = readText(props['운송장번호']);
+    // 송장번호가 Text면 rich_text로 읽히는 경우가 많아서 rich_text 우선
+    const trackingNumber =
+      richText(props[PROP_TRACK]) ||
+      props[PROP_TRACK]?.number?.toString?.() ||
+      "";
 
     return res.status(200).json({
-      success: true,
-      receiptTitle,
-      status,
-      tracking: tracking || '',
-      lastEdited: page.last_edited_time || ''
+      receipt: receiptTitle,
+      status: statusName,
+      trackingNumber,
     });
-  } catch (e) {
-    console.error('status error:', e);
-    return res.status(500).json({ error: '조회 중 오류가 발생했습니다.' });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: "Status lookup failed" });
   }
 }
