@@ -594,7 +594,7 @@
           <button class="btn btn-ghost" type="button" id="copyReceiptBtn">접수번호 복사</button>
           <a class="btn btn-ghost" id="goStatusBtn" href="./status.html" style="text-decoration:none;display:inline-flex;justify-content:center;align-items:center;">접수 조회</a>
           <button class="btn btn-primary" type="button" id="savePngBtn">접수증 저장</button>
-          <button class="btn btn-outline" type="button" id="newEntryBtn">다시 입력</button>
+<!--          <button class="btn btn-outline" type="button" id="newEntryBtn">다시 입력</button>  -->
         </div>
 
         <div id="receiptStatus" class="status" style="margin-top:10px;"></div>
@@ -1011,7 +1011,7 @@
             });
             setReceiptStatus('✅ 접수증 저장이 준비되었습니다.', 'ok');
           };
-
+/*
           document.getElementById('newEntryBtn').onclick = () => {
             // 폼 초기화
             document.getElementById('form').reset();
@@ -1023,7 +1023,7 @@
             clearErrors();
             showFormScreen();
           };
-
+*/
           // 폼 화면 숨기고 접수증 화면만 보여주기(요청사항)
           showReceiptScreen();
         } else {
