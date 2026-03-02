@@ -116,6 +116,21 @@
       .row{ flex-direction:column; align-items:stretch; }
       .top-actions{ position:static; margin-bottom:12px; justify-content:flex-end; }
     }
+
+/* 조회 버튼을 고정폭(주소 찾기 버튼 느낌)으로 */
+.btn-query{
+  flex: 0 0 auto;     /* row에서 늘어나지 않게 */
+  width: 140px;       /* 주소찾기랑 동일하게 */
+  padding: 12px 12px;
+}
+
+/* 모바일에서는 버튼이 아래로 내려가면 100% */
+@media (max-width: 640px){
+  .btn-query{
+    width: 100%;
+  }
+}
+    
   </style>
 </head>
 <body>
@@ -145,7 +160,7 @@
         <label for="receipt">접수번호</label>
         <div class="row">
           <input id="receipt" type="text" placeholder="예: 260301-144727-김미영-2839" />
-          <button id="btn" class="btn" type="button">조회</button>
+          <button id="btn" class="btn btn-query" type="button">조회</button>
         </div>
 
         <div id="status" class="status"></div>
