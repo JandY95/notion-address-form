@@ -213,19 +213,43 @@
       if(type) el.classList.add(type);
       el.textContent = msg || "";
     }
-
-    function setResult(data){
-      const box = document.getElementById("result");
-      if(!data){ box.style.display="none"; box.innerHTML=""; return; }
-      box.style.display="block";
-      box.innerHTML = `
-        <div class="kv">
-          <div class="k">접수번호</div><div class="v">${data.receipt || ""}</div>
-          <div class="k">처리상태</div><div class="v">${data.status || ""}</div>
-          <div class="k">송장번호</div><div class="v">${data.trackingNumber || "미등록"}</div>
-        </div>
-      `;
+  
+  function setResult(data){
+    const box = document.getElementById("result");
+    if(!data){ 
+      box.style.display="none"; 
+      box.innerHTML=""; 
+      return; 
     }
+
+    // ✅ 상태 정규화: "출고 완료" 같은 띄어쓰기/공백 제거 대비
+    const statusRaw = (data.status || "").trim();
+    const statusNorm = statusRaw.replace(/\s+/g, ""); // 공백 제거
+    const tracking = (data.trackingNumber || "").trim();
+
+    // ✅ "출고완료"일 때 + 송장번호가 있을 때만 표시
+    const showTracking = (statusNorm === "출고완료") && !!tracking;
+
+    const trackingRow = showTracking
+      ? `<div class="k">송장번호</div><div class="v">CJ대한통운 ${tracking}</div>`
+      : ``;
+
+    box.style.display="block";
+    box.innerHTML = `
+      <div class="kv">
+        <div class="k">접수번호</div><div class="v">${data.receipt || ""}</div>
+        <div class="k">처리상태</div><div class="v">${statusRaw || ""}</div>
+        ${trackingRow}
+      </div>
+      ${
+        statusNorm !== "출고완료"
+        ? `<div style="margin-top:10px;color:var(--muted);font-size:13px;line-height:1.5;">
+             송장번호는 <b>출고완료</b> 상태가 되면 표시됩니다.
+           </div>`
+        : ``
+      }
+    `;
+  }
 
     function getReceiptFromHash(){
       const hash = (location.hash || "").replace(/^#/, "");
