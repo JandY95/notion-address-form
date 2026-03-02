@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>COCORO SHOP | 접수 조회</title>
   <style>
     :root{
@@ -10,13 +10,18 @@
       --card:rgba(255,255,255,.92);
       --text:#111827; --muted:#6b7280; --line:#e5e7eb;
       --accent:#e56aa6; --accent2:#7aa7ff;
-      --danger:#ef4444; --ok:#0f766e;
       --shadow: 0 14px 48px rgba(17,24,39,.10);
       --radius: 18px;
+
+      --season-overlay-opacity:.18;
+      --season-glow-1: rgba(229,106,166,.16);
+      --season-glow-2: rgba(122,167,255,.14);
+      --season-glow-3: rgba(255,210,225,.12);
     }
     *{ box-sizing:border-box; }
     body{
-      margin:0; color:var(--text);
+      margin:0;
+      color:var(--text);
       font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR",Segoe UI,Roboto,sans-serif;
       background:
         radial-gradient(900px 600px at 12% 12%, rgba(229,106,166,.16), transparent 60%),
@@ -24,218 +29,234 @@
         linear-gradient(180deg, var(--bg1), var(--bg2));
       min-height:100vh;
     }
-    .wrap{ width:min(720px, 92vw); margin: 28px auto 64px; }
-    .hero{ padding: 14px 8px 10px; }
-    .brand{
-      display:flex; align-items:center; gap:12px; margin-bottom:10px;
-      font-weight:950; letter-spacing:1.2px; text-transform:uppercase;
+    body::before{
+      content:"";
+      position:fixed;
+      inset:-40px;
+      pointer-events:none;
+      z-index:-1;
+      opacity: var(--season-overlay-opacity, .18);
+      background:
+        radial-gradient(900px 600px at 12% 12%, var(--season-glow-1, rgba(229,106,166,.16)), transparent 60%),
+        radial-gradient(900px 600px at 88% 18%, var(--season-glow-2, rgba(122,167,255,.14)), transparent 60%),
+        radial-gradient(900px 600px at 70% 90%, var(--season-glow-3, rgba(255,210,225,.12)), transparent 60%);
     }
+    .wrap{ width:min(760px,92vw); margin:30px auto 64px; }
+
+    .hero{ padding:14px 8px 10px; position:relative; }
+    .top-actions{ position:absolute; right:6px; top:10px; display:flex; gap:10px; }
+    .btn-top{
+      display:inline-flex; align-items:center; gap:8px;
+      border:1px solid rgba(229,106,166,.35);
+      background: rgba(255,255,255,.75);
+      backdrop-filter: blur(10px);
+      padding:10px 14px; border-radius:14px;
+      font-weight:950; color:#b84a84; cursor:pointer; text-decoration:none;
+    }
+
+    .brand-row{ display:flex; align-items:center; gap:12px; margin-bottom:10px; }
     .mono{
-      width:44px; height:44px; border-radius:16px;
-      background: linear-gradient(135deg, rgba(229,106,166,.96), rgba(122,167,255,.96));
+      width:44px;height:44px;border-radius:16px;
+      background:linear-gradient(135deg, rgba(229,106,166,.95), rgba(122,167,255,.95));
+      box-shadow:0 14px 30px rgba(229,106,166,.16);
       display:flex; align-items:center; justify-content:center;
-      color:#fff; font-weight:950;
-      box-shadow: 0 14px 30px rgba(229,106,166,.16);
+      color:#fff; font-weight:950; letter-spacing:.8px; position:relative; overflow:hidden;
     }
-    .title{ margin: 8px 0 6px; font-size: clamp(24px, 4vw, 32px); font-weight:950; }
-    .subtitle{ margin:0; color:var(--muted); line-height:1.6; font-size:14.5px; }
+    .mono::after{ content:""; position:absolute; inset:-40%;
+      background:radial-gradient(circle at 30% 30%, rgba(255,255,255,.35), transparent 45%);
+      transform:rotate(12deg);
+    }
+    .mono span{ position:relative; z-index:1; font-size:18px; }
+    .brand-name{ font-weight:950; letter-spacing:1px; font-size:14px; opacity:.95; }
+    .title{ margin:8px 0 6px; font-size:clamp(28px,4.8vw,40px); font-weight:980; letter-spacing:-.5px; }
+    .subtitle{ margin:0; color:var(--muted); line-height:1.7; font-size:14.5px; }
 
     .card{
-      margin-top:14px; background:var(--card);
-      border:1px solid rgba(229,231,235,.78);
-      box-shadow:var(--shadow);
-      border-radius:var(--radius);
-      overflow:hidden;
+      margin-top:14px; background:var(--card); backdrop-filter: blur(10px);
+      border:1px solid rgba(229,231,235,.78); box-shadow:var(--shadow);
+      border-radius:var(--radius); overflow:hidden;
     }
     .card-top{
-      padding:14px 18px;
-      border-bottom:1px solid rgba(229,231,235,.78);
-      background: linear-gradient(90deg, rgba(229,106,166,.09), rgba(122,167,255,.08));
-      color:var(--muted);
-      font-size:13.2px;
-      line-height:1.55;
+      padding:14px 18px; border-bottom:1px solid rgba(229,231,235,.78);
+      background:linear-gradient(90deg, rgba(229,106,166,.09), rgba(122,167,255,.08));
+      color:var(--muted); font-size:13.2px; line-height:1.55;
     }
     .form{ padding:18px; }
-
-    label{ font-size:14px; font-weight:800; }
+    label{ font-size:14px; font-weight:950; }
     input{
-      width:100%;
-      border:1px solid var(--line);
-      border-radius:14px;
-      padding:12px;
-      font-size:16px;
-      outline:none;
-      background:#fff;
-      margin-top:6px;
+      width:100%; border:1px solid var(--line); border-radius:14px;
+      padding:12px 12px; font-size:16px; outline:none; background:#fff;
     }
-    input:focus{
-      border-color: rgba(229,106,166,.55);
-      box-shadow: 0 0 0 4px rgba(229,106,166,.13);
-    }
-    .row{ display:grid; grid-template-columns: 1fr 170px; gap:12px; margin-top:12px; }
-    @media (max-width: 520px){ .row{ grid-template-columns: 1fr; } }
+    input:focus{ border-color:rgba(229,106,166,.55); box-shadow:0 0 0 4px rgba(229,106,166,.13); }
+    .row{ display:flex; gap:10px; align-items:center; margin-top:8px; }
+    .row > *{ flex:1; }
+
     .btn{
-      border:none; border-radius:14px;
-      padding:12px 14px;
-      font-size:16px; font-weight:900;
-      cursor:pointer; min-height:48px;
-      background: linear-gradient(135deg, rgba(229,106,166,.98), rgba(122,167,255,.98));
-      color:#fff;
-      box-shadow:0 12px 24px rgba(229,106,166,.16);
+      border:none; border-radius:14px; padding:12px 14px;
+      font-size:16px; font-weight:950; cursor:pointer; min-height:48px;
+      background:linear-gradient(135deg, var(--accent), var(--accent2));
+      color:#fff; box-shadow:0 12px 24px rgba(229,106,166,.16);
+      white-space:nowrap;
     }
-    .status{ margin-top:12px; font-size:14px; min-height:22px; color:var(--muted); }
-    .status.ok{ color:var(--ok); font-weight:900; }
-    .status.bad{ color:#b91c1c; font-weight:900; }
+    .status{ margin-top:12px; font-size:14px; line-height:1.5; min-height:22px; color:var(--muted); }
+    .status.bad{ color:#b91c1c; font-weight:950; }
+    .status.ok{ color:#0f766e; font-weight:950; }
 
     .result{
-      display:none;
-      margin-top:14px;
-      background:#fff;
-      border:1px solid rgba(229,231,235,.95);
-      border-radius:16px;
-      padding:14px;
+      margin-top:14px; padding:14px; border-radius:16px;
+      border:1px solid rgba(229,231,235,.9); background:#fff;
     }
-    .result.show{ display:block; }
-    .result h3{ margin:0 0 10px; font-size:16px; font-weight:950; }
+    .kv{ display:grid; grid-template-columns:120px 1fr; gap:10px; }
+    .k{ color:var(--muted); font-weight:950; }
+    .v{ font-weight:980; }
 
-    .kv{ display:grid; grid-template-columns: 120px 1fr; gap:8px 10px; font-size:14px; }
-    .kv .k{ color:var(--muted); }
-    .kv .v{ font-weight:900; word-break:break-word; }
-
-    .stepper{
-      margin-top:12px;
-      display:grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap:8px;
-      font-size:13px;
+    @media (max-width:640px){
+      .wrap{ margin:18px auto 46px; }
+      .form{ padding:16px; }
+      .row{ flex-direction:column; align-items:stretch; }
+      .top-actions{ position:static; margin-bottom:12px; justify-content:flex-end; }
     }
-    .step{
-      padding:10px 8px;
-      border:1px solid rgba(229,231,235,.9);
-      border-radius:12px;
-      text-align:center;
-      color:#6b7280;
-      background: rgba(243,244,246,.6);
-      font-weight:900;
-    }
-    .step.on{
-      color:#111827;
-      background: rgba(229,106,166,.10);
-      border-color: rgba(229,106,166,.28);
-    }
-
-    .tiny{ margin-top:10px; color:var(--muted); font-size:12.5px; line-height:1.45; }
   </style>
 </head>
 <body>
   <div class="wrap">
-    <div class="hero">
-      <div class="brand"><div class="mono">C</div>COCORO SHOP</div>
+    <header class="hero">
+      <div class="top-actions">
+        <a class="btn-top" href="./index.html">📦 배송 정보 입력</a>
+      </div>
+
+      <div class="brand-row">
+        <div class="mono"><span>C</span></div>
+        <div>
+          <div class="brand-name">COCORO SHOP</div>
+        </div>
+      </div>
+
       <h1 class="title">접수 조회</h1>
       <p class="subtitle">접수번호로 현재 처리 상태 / 송장번호를 확인할 수 있어요.</p>
-    </div>
+    </header>
 
-    <div class="card">
+    <section class="card">
       <div class="card-top">
         💡 접수번호는 접수증에 적혀 있어요. (접수번호만 입력하면 됩니다)
       </div>
+
       <div class="form">
-        <label>접수번호</label>
-        <input id="receipt" placeholder="예: 260228-154023-김서연-2242" />
-
+        <label for="receipt">접수번호</label>
         <div class="row">
-          <div></div>
-          <div style="display:flex; align-items:flex-end;">
-            <button class="btn" id="btnCheck">조회</button>
-          </div>
+          <input id="receipt" type="text" placeholder="예: 260301-144727-김미영-2839" />
+          <button id="btn" class="btn" type="button">조회</button>
         </div>
 
-        <div class="status" id="msg"></div>
-
-        <div class="result" id="result">
-          <h3>조회 결과</h3>
-          <div class="kv" id="kv"></div>
-
-          <div class="stepper" id="stepper">
-            <div class="step" data-s="접수">접수</div>
-            <div class="step" data-s="출고준비">출고준비</div>
-            <div class="step" data-s="출고완료">출고완료</div>
-            <div class="step" data-s="보류">보류</div>
-          </div>
-
-          <div class="tiny">
-            수정이 필요하시면 인스타 DM으로 <b>접수번호</b>와 수정 내용을 보내주세요.
-          </div>
-        </div>
+        <div id="status" class="status"></div>
+        <div id="result" class="result" style="display:none;"></div>
       </div>
-    </div>
+    </section>
   </div>
 
   <script>
-    const msg = (t, type) => {
-      const el = document.getElementById('msg');
-      el.classList.remove('ok','bad');
-      if(type) el.classList.add(type);
-      el.textContent = t || '';
-    };
+    // ===== Monthly Theme (auto) =====
+    (function applyMonthlyTheme(){
+      const m = new Date().getMonth() + 1;
+      const root = document.documentElement;
 
-    // hash로 접수번호 미리 채우기 (#receipt=...)
-    (function(){
-      const h = location.hash || '';
-      const m = h.match(/receipt=([^&]+)/);
-      if(m){
-        document.getElementById('receipt').value = decodeURIComponent(m[1]);
-      }
+      const base = {
+        '--bg1': '#fff7fb',
+        '--bg2': '#f6fbff',
+        '--accent': '#e56aa6',
+        '--accent2': '#7aa7ff',
+        '--season-overlay-opacity': '.18',
+        '--season-glow-1': 'rgba(229,106,166,.16)',
+        '--season-glow-2': 'rgba(122,167,255,.14)',
+        '--season-glow-3': 'rgba(255,210,225,.12)',
+      };
+
+      const themes = {
+        1: {'--bg1':'#fbfcff','--bg2':'#f4f7ff','--accent':'#6b7cff','--accent2':'#c3d0ff','--season-glow-1':'rgba(107,124,255,.14)','--season-glow-2':'rgba(195,208,255,.18)','--season-glow-3':'rgba(240,244,255,.18)'},
+        2: {'--bg1':'#fff6fb','--bg2':'#f7fbff','--accent':'#e56aa6','--accent2':'#ffb6c9','--season-glow-1':'rgba(229,106,166,.18)','--season-glow-2':'rgba(255,182,201,.18)','--season-glow-3':'rgba(200,230,255,.12)'},
+        3: {'--bg1':'#fff7f3','--bg2':'#f5fbff','--accent':'#d86bb9','--accent2':'#ffb38a','--season-glow-1':'rgba(216,107,185,.16)','--season-glow-2':'rgba(255,179,138,.14)','--season-glow-3':'rgba(186,235,255,.12)'},
+        4: {'--bg1':'#fff3f8','--bg2':'#fffdf6','--accent':'#e46b9a','--accent2':'#ffd3e1','--season-glow-1':'rgba(228,107,154,.16)','--season-glow-2':'rgba(255,211,225,.22)','--season-glow-3':'rgba(255,245,219,.18)'},
+        5: {'--bg1':'#f3fff7','--bg2':'#f5fbff','--accent':'#2fb7a3','--accent2':'#7aa7ff','--season-glow-1':'rgba(47,183,163,.14)','--season-glow-2':'rgba(122,167,255,.12)','--season-glow-3':'rgba(190,255,225,.14)'},
+        6: {'--bg1':'#f4fffe','--bg2':'#f5f6ff','--accent':'#6c7bff','--accent2':'#35c9c0','--season-glow-1':'rgba(108,123,255,.14)','--season-glow-2':'rgba(53,201,192,.14)','--season-glow-3':'rgba(200,210,255,.14)'},
+        7: {'--bg1':'#f2fbff','--bg2':'#f6fffe','--accent':'#1aa7d7','--accent2':'#35c9c0','--season-glow-1':'rgba(26,167,215,.14)','--season-glow-2':'rgba(53,201,192,.14)','--season-glow-3':'rgba(175,240,255,.14)'},
+        8: {'--bg1':'#fff6f0','--bg2':'#f2fbff','--accent':'#ff8a7a','--accent2':'#5aa6ff','--season-glow-1':'rgba(255,138,122,.14)','--season-glow-2':'rgba(90,166,255,.12)','--season-glow-3':'rgba(255,210,175,.12)'},
+        9: {'--bg1':'#fffaf2','--bg2':'#f7f2ff','--accent':'#a56bd8','--accent2':'#f2c79a','--season-glow-1':'rgba(165,107,216,.12)','--season-glow-2':'rgba(242,199,154,.14)','--season-glow-3':'rgba(255,241,210,.16)'},
+        10:{'--bg1':'#fff7f0','--bg2':'#fffdf6','--accent':'#d26a4a','--accent2':'#f2c79a','--season-glow-1':'rgba(210,106,74,.14)','--season-glow-2':'rgba(242,199,154,.14)','--season-glow-3':'rgba(255,235,210,.16)'},
+        11:{'--bg1':'#fff6f7','--bg2':'#f7f2ef','--accent':'#a8566a','--accent2':'#caa07a','--season-glow-1':'rgba(168,86,106,.14)','--season-glow-2':'rgba(202,160,122,.14)','--season-glow-3':'rgba(245,230,218,.16)'},
+        12:{'--bg1':'#fff7fb','--bg2':'#f4f7ff','--accent':'#e11d48','--accent2':'#7aa7ff','--season-glow-1':'rgba(225,29,72,.12)','--season-glow-2':'rgba(122,167,255,.12)','--season-glow-3':'rgba(255,210,225,.12)'},
+      };
+
+      const t = { ...base, ...(themes[m] || {}) };
+      Object.entries(t).forEach(([k,v]) => root.style.setProperty(k, v));
     })();
 
-    function setStepper(status){
-      document.querySelectorAll('.step').forEach(s => s.classList.remove('on'));
-      const key = status || '접수';
-      const el = document.querySelector(`.step[data-s="${key}"]`);
-      if(el) el.classList.add('on');
+    const API_URL = "/api/status";
+
+    function setStatus(msg, type){
+      const el = document.getElementById("status");
+      el.classList.remove("bad","ok");
+      if(type) el.classList.add(type);
+      el.textContent = msg || "";
     }
 
-    async function check(){
-      const receipt = document.getElementById('receipt').value.trim();
-
-      document.getElementById('result').classList.remove('show');
-      msg('');
-
-      if(!receipt){
-        msg('접수번호를 입력해주세요.', 'bad');
-        return;
-      }
-
-      msg('조회 중입니다…');
-
-      const res = await fetch('/api/status', {
-        method: 'POST',
-        headers: { 'Content-Type':'application/json' },
-        body: JSON.stringify({ receiptTitle: receipt })
-      });
-
-      const data = await res.json().catch(() => ({}));
-
-      if(!res.ok){
-        msg(data.error || '조회에 실패했어요. 접수번호를 확인해주세요.', 'bad');
-        return;
-      }
-
-      msg('✅ 조회 완료', 'ok');
-
-      const kv = document.getElementById('kv');
-      kv.innerHTML = `
-        <div class="k">접수번호</div><div class="v">${data.receiptTitle}</div>
-        <div class="k">상태</div><div class="v">${data.status || '-'}</div>
-        ${data.tracking ? `<div class="k">송장번호</div><div class="v">${data.tracking}</div>` : ``}
-        <div class="k">최종 업데이트</div><div class="v">${data.lastEdited || '-'}</div>
+    function setResult(data){
+      const box = document.getElementById("result");
+      if(!data){ box.style.display="none"; box.innerHTML=""; return; }
+      box.style.display="block";
+      box.innerHTML = `
+        <div class="kv">
+          <div class="k">접수번호</div><div class="v">${data.receipt || ""}</div>
+          <div class="k">처리상태</div><div class="v">${data.status || ""}</div>
+          <div class="k">송장번호</div><div class="v">${data.trackingNumber || "미등록"}</div>
+        </div>
       `;
-
-      setStepper(data.status || '접수');
-      document.getElementById('result').classList.add('show');
     }
 
-    document.getElementById('btnCheck').addEventListener('click', check);
+    function getReceiptFromHash(){
+      const hash = (location.hash || "").replace(/^#/, "");
+      if(!hash) return "";
+      const params = new URLSearchParams(hash);
+      return (params.get("receipt") || "").trim();
+    }
+
+    async function doQuery(){
+      setResult(null);
+      const receipt = (document.getElementById("receipt").value || "").trim();
+      if(!receipt){
+        setStatus("접수번호를 입력해주세요.", "bad");
+        return;
+      }
+
+      const btn = document.getElementById("btn");
+      btn.disabled = true;
+      setStatus("조회 중입니다…", "");
+
+      try{
+        const res = await fetch(`${API_URL}?receipt=${encodeURIComponent(receipt)}`);
+        const data = await res.json().catch(()=> ({}));
+        if(res.ok){
+          setStatus("✅ 조회 완료", "ok");
+          setResult(data);
+        }else{
+          setStatus(`❌ ${data.error || "조회 실패"}`, "bad");
+        }
+      }catch{
+        setStatus("❌ 네트워크 오류가 발생했어요. 잠시 후 다시 시도해주세요.", "bad");
+      }finally{
+        btn.disabled = false;
+      }
+    }
+
+    document.getElementById("btn").addEventListener("click", doQuery);
+    document.getElementById("receipt").addEventListener("keydown", (e)=>{
+      if(e.key === "Enter"){ e.preventDefault(); doQuery(); }
+    });
+
+    const fromHash = getReceiptFromHash();
+    if(fromHash){
+      document.getElementById("receipt").value = fromHash;
+      doQuery();
+    }
   </script>
 </body>
 </html>
