@@ -973,7 +973,10 @@
           body: JSON.stringify(payload)
         });
 
-        const result = await response.json().catch(()=> ({}));
+        // ✅ 응답이 비어있거나 JSON이 깨져도 안전하게 처리
+const raw = await response.text();
+let result = {};
+try { result = raw ? JSON.parse(raw) : {}; } catch { result = {}; }
 
         if (response.ok) {
           const receiptTitle = result.receiptTitle || result.receipt || '';
