@@ -993,9 +993,15 @@ try { result = raw ? JSON.parse(raw) : {}; } catch { result = {}; }
 
           // 접수조회 링크(해시로 자동입력)
           const statusHref = `./status.html#receipt=${encodeURIComponent(receiptTitle)}`;
-          document.getElementById('r_statusLink').href = statusHref;
-          document.getElementById('goStatusBtn').href = statusHref;
-          document.getElementById('topStatusLink').href = statusHref;
+          const goStatusBtn = document.getElementById('goStatusBtn');
+if (goStatusBtn) goStatusBtn.href = statusHref;
+
+const topStatusLink = document.getElementById('topStatusLink');
+if (topStatusLink) topStatusLink.href = statusHref;
+
+// r_statusLink는 화면에서 주석처리(삭제)했을 수 있으니 있을 때만 적용
+const rStatusLink = document.getElementById('r_statusLink');
+if (rStatusLink) rStatusLink.href = statusHref;
 
           // 버튼 동작 저장용
           document.getElementById('copyReceiptBtn').onclick = async () => {
@@ -1033,8 +1039,9 @@ try { result = raw ? JSON.parse(raw) : {}; } catch { result = {}; }
           setStatus(`❌ 저장 실패: ${result.error || raw || '오류'}`, 'bad');
         }
       } catch (error) {
-        setStatus('❌ 네트워크 오류가 발생했어요. 잠시 후 다시 시도해주세요.', 'bad');
-      } finally {
+  console.error(error);
+  setStatus(`❌ 저장 후 화면 표시 중 오류가 발생했어요. 다시 시도해주세요. (${error?.message || 'unknown'})`, 'bad');
+} finally {
         btn.disabled = false;
         btn.style.filter = '';
       }
