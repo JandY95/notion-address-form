@@ -44,7 +44,7 @@ export default async function handler(req, res) {
     // 허니팟(봇 방지)
     if (website) return res.status(400).json({ error: 'Invalid request' });
 
-    if (!customerName || !phone || !postcode || !baseAddress || !fullAddress) {
+    if (!customerName || !phone || !postcode || !baseAddress || !detailAddress) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
@@ -66,7 +66,7 @@ export default async function handler(req, res) {
         우편번호: { rich_text: [{ text: { content: postcode } }] },
         기본주소: { rich_text: [{ text: { content: baseAddress } }] },
         상세주소: { rich_text: [{ text: { content: detailAddress || '' } }] },
-        전체주소: { rich_text: [{ text: { content: fullAddress } }] },
+//        전체주소: { rich_text: [{ text: { content: fullAddress } }] },
         요청사항: { rich_text: [{ text: { content: request || '' } }] },
         처리상태: { status: { name: '접수' } }
       }
