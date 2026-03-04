@@ -43,7 +43,10 @@ export default async function handler(req, res) {
     });
 
     if (!q.results?.length) {
-      return res.status(404).json({ error: "Not found" });
+      return res.status(404).json({
+  error: "NOT_FOUND",
+  message: "입력하신 접수번호를 찾을 수 없습니다.",
+});
     }
 
     const page = q.results[0];
@@ -68,6 +71,9 @@ export default async function handler(req, res) {
     });
   } catch (err) {
     console.error(err);
-    return res.status(500).json({ error: "Status lookup failed" });
+    return res.status(500).json({
+  error: "LOOKUP_FAILED",
+  message: "조회 중 오류가 발생했어요. 잠시 후 다시 시도해 주세요.",
+});
   }
 }
