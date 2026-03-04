@@ -160,7 +160,6 @@ export default async function handler(req, res) {
   }
 
   try {
-    // ✅ Vercel에서 body가 string으로 올 수도 있어서 안전 처리
     const body = typeof req.body === "string" ? JSON.parse(req.body) : (req.body || {});
 
     const {
@@ -170,10 +169,9 @@ export default async function handler(req, res) {
       setDone = true,
       dryRun = true,
       lookbackDays,
-      checkMissStatus = false, // ✅ 추가
+      checkMissStatus = false,
     } = body;
 
-    // ✅ 비번/환경변수 안내 강화
     if (!ADMIN_PASS) {
       return res.status(500).json({
         error: "서버 설정 오류: TRACKING_ADMIN_PASS가 설정되지 않았습니다.",
@@ -212,23 +210,16 @@ export default async function handler(req, res) {
       const tracking = String(it.tracking || "").trim();
       if (!receipt || !tracking) continue;
 
-      // 출고준비 맵에서 중복
       if (dup.has(receipt)) {
         duplicated++;
-        results.push({
-          receipt,
-          tracking,
-          status: "중복(출고준비에서 같은 접수번호 2개 이상)",
-        });
+        results.push({ receipt, tracking, status: "중복(출고준비에서 같은 접수번호 2개 이상)" });
         continue;
       }
 
-      // ✅ 출고준비 맵에서만 먼저 찾기
       const hit = map.get(receipt);
 
       // === 미일치 처리 ===
       if (!hit) {
-        // ✅ 미리보기에서만 상태 확인 옵션 동작
         if (dryRun && checkMissStatus) {
           if (missCheckCount >= MAX_MISS_STATUS_CHECK) {
             miss++;
@@ -264,7 +255,6 @@ export default async function handler(req, res) {
               continue;
             }
 
-            // found.length === 1
             const page = found[0];
             const props = page.properties || {};
             const st = getStatusName(props["처리상태"]) || "(상태없음)";
@@ -278,18 +268,13 @@ export default async function handler(req, res) {
               status: `미일치(노션에는 있음: 처리상태='${st}'${existing ? `, 기존 송장='${existing}'` : ""}${created ? `, 접수=${created}` : ""})`,
             });
             continue;
-          } catch (e) {
+          } catch {
             miss++;
-            results.push({
-              receipt,
-              tracking,
-              status: "미일치(상태 확인 실패: 잠시 후 다시 시도)",
-            });
+            results.push({ receipt, tracking, status: "미일치(상태 확인 실패: 잠시 후 다시 시도)" });
             continue;
           }
         }
 
-        // 옵션 OFF 또는 적용(dryRun=false)일 때는 기존 방식
         miss++;
         results.push({
           receipt,
@@ -305,11 +290,7 @@ export default async function handler(req, res) {
       if (dryRun) {
         if (hit.existingTracking && !overwrite) {
           skipped++;
-          results.push({
-            receipt,
-            tracking,
-            status: `건너뜀: 이미 송장번호 있음(${hit.existingTracking})`,
-          });
+          results.push({ receipt, tracking, status: `건너뜀: 이미 송장번호 있음(${hit.existingTracking})` });
         } else {
           results.push({ receipt, tracking, status: "일치(적용 가능)" });
         }
@@ -327,11 +308,7 @@ export default async function handler(req, res) {
           results.push({ receipt, tracking, status: "업데이트 완료" });
         } else {
           skipped++;
-          results.push({
-            receipt,
-            tracking,
-            status: `건너뜀: ${r.reason}`,
-          });
+          results.push({ receipt, tracking, status: `건너뜀: ${r.reason}` });
         }
 
         await sleep(UPDATE_DELAY_MS);
