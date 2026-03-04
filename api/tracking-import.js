@@ -5,11 +5,15 @@ const notion = new Client({ auth: process.env.NOTION_TOKEN });
 const NOTION_DB = process.env.NOTION_DATABASE_ID;
 const ADMIN_PASS = process.env.TRACKING_ADMIN_PASS || "";
 
-// ====== 여기만 보면 됨(설정값) ======
-const TARGET_STATUS = "출고준비";     // 이 상태인 건만 반영
-const DEFAULT_LOOKBACK_DAYS = 14;     // 최근 N일치에서 출고준비를 모아 매칭(기본 14)
-const UPDATE_DELAY_MS = 350;          // Notion API 속도 제한 대비
-// ====================================
+// ====== 설정 ======
+const TARGET_STATUS = "출고준비";
+const DEFAULT_LOOKBACK_DAYS = 14;
+const UPDATE_DELAY_MS = 350;
+
+// ✅ 미일치 상태 확인(성능 보호)
+const MISS_CHECK_DELAY_MS = 120;
+const MAX_MISS_STATUS_CHECK = 30;
+// ==================
 
 function sleep(ms) {
   return new Promise((r) => setTimeout(r, ms));
@@ -25,6 +29,21 @@ function ymdKST() {
   const mm = String(d.getUTCMonth() + 1).padStart(2, "0");
   const dd = String(d.getUTCDate()).padStart(2, "0");
   return `${yy}-${mm}-${dd}`;
+}
+
+function formatKST(iso) {
+  try {
+    const d = new Date(iso);
+    const k = new Date(d.getTime() + 9 * 60 * 60 * 1000);
+    const yy = k.getUTCFullYear();
+    const mm = String(k.getUTCMonth() + 1).padStart(2, "0");
+    const dd = String(k.getUTCDate()).padStart(2, "0");
+    const hh = String(k.getUTCHours()).padStart(2, "0");
+    const mi = String(k.getUTCMinutes()).padStart(2, "0");
+    return `${yy}-${mm}-${dd} ${hh}:${mi}`;
+  } catch {
+    return "";
+  }
 }
 
 function getTitleText(prop) {
@@ -94,7 +113,19 @@ async function buildReceiptMap(lookbackDays) {
   return { map, dup };
 }
 
-// ✅ 노션 페이지 업데이트(추가 retrieve 없이 기존값 판단 가능)
+// ✅ 접수번호(title)로 노션 직접 조회(미일치 상태 확인용)
+async function queryPagesByReceipt(receipt) {
+  return await notion.databases.query({
+    database_id: NOTION_DB,
+    page_size: 5,
+    filter: {
+      property: "접수번호",
+      title: { equals: receipt },
+    },
+  });
+}
+
+// ✅ 노션 페이지 업데이트
 async function updateTracking({ pageId, trackingNo, setDone, overwrite, existingTracking }) {
   if (existingTracking && !overwrite) {
     return { updated: false, reason: "이미 송장번호가 있음", existing: existingTracking };
@@ -118,7 +149,7 @@ async function updateTracking({ pageId, trackingNo, setDone, overwrite, existing
 }
 
 export default async function handler(req, res) {
-  // CORS(필요 시)
+  // CORS
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
@@ -129,6 +160,9 @@ export default async function handler(req, res) {
   }
 
   try {
+    // ✅ Vercel에서 body가 string으로 올 수도 있어서 안전 처리
+    const body = typeof req.body === "string" ? JSON.parse(req.body) : (req.body || {});
+
     const {
       pass,
       items,
@@ -136,24 +170,28 @@ export default async function handler(req, res) {
       setDone = true,
       dryRun = true,
       lookbackDays,
-    } = req.body || {};
+      checkMissStatus = false, // ✅ 추가
+    } = body;
 
+    // ✅ 비번/환경변수 안내 강화
     if (!ADMIN_PASS) {
-  return res.status(500).json({
-    error: "서버 설정 오류: TRACKING_ADMIN_PASS가 설정되지 않았습니다.",
-    hint: "Vercel > Settings > Environment Variables 에 TRACKING_ADMIN_PASS를 Production으로 추가한 뒤 Redeploy 하세요."
-  });
-}
+      return res.status(500).json({
+        error: "서버 설정 오류: TRACKING_ADMIN_PASS가 설정되지 않았습니다.",
+        hint: "Vercel > Settings > Environment Variables 에 TRACKING_ADMIN_PASS를 Production으로 추가한 뒤 Redeploy 하세요."
+      });
+    }
 
-if (pass !== ADMIN_PASS) {
-  return res.status(401).json({
-    error: "운영자 비밀번호가 올바르지 않습니다.",
-    hint: "비밀번호를 다시 확인해 주세요."
-  });
-}
+    if (pass !== ADMIN_PASS) {
+      return res.status(401).json({
+        error: "운영자 비밀번호가 올바르지 않습니다.",
+        hint: "비밀번호를 다시 확인해 주세요."
+      });
+    }
+
     if (!NOTION_DB) {
       return res.status(500).json({ error: "Missing NOTION_DATABASE_ID" });
     }
+
     if (!Array.isArray(items) || items.length === 0) {
       return res.status(400).json({ error: "items is empty" });
     }
@@ -165,18 +203,16 @@ if (pass !== ADMIN_PASS) {
     const { map, dup } = await buildReceiptMap(lb);
 
     const results = [];
-    let ok = 0,
-      miss = 0,
-      duplicated = 0,
-      skipped = 0,
-      updated = 0;
+    let ok = 0, miss = 0, duplicated = 0, skipped = 0, updated = 0;
+
+    let missCheckCount = 0;
 
     for (const it of items) {
       const receipt = String(it.receipt || "").trim();
       const tracking = String(it.tracking || "").trim();
       if (!receipt || !tracking) continue;
 
-      // 중복
+      // 출고준비 맵에서 중복
       if (dup.has(receipt)) {
         duplicated++;
         results.push({
@@ -187,9 +223,73 @@ if (pass !== ADMIN_PASS) {
         continue;
       }
 
-      // ✅ 출고준비 맵에서만 찾는다 (즉, 출고준비가 아니면 매칭 안 됨)
+      // ✅ 출고준비 맵에서만 먼저 찾기
       const hit = map.get(receipt);
+
+      // === 미일치 처리 ===
       if (!hit) {
+        // ✅ 미리보기에서만 상태 확인 옵션 동작
+        if (dryRun && checkMissStatus) {
+          if (missCheckCount >= MAX_MISS_STATUS_CHECK) {
+            miss++;
+            results.push({
+              receipt,
+              tracking,
+              status: `미일치(상태 확인 생략: 최대 ${MAX_MISS_STATUS_CHECK}건만 조회)`,
+            });
+            continue;
+          }
+
+          missCheckCount++;
+
+          try {
+            const q = await queryPagesByReceipt(receipt);
+            await sleep(MISS_CHECK_DELAY_MS);
+
+            const found = q.results || [];
+
+            if (found.length === 0) {
+              miss++;
+              results.push({ receipt, tracking, status: "미일치(노션에 없음)" });
+              continue;
+            }
+
+            if (found.length > 1) {
+              duplicated++;
+              results.push({
+                receipt,
+                tracking,
+                status: `중복(노션에 동일 접수번호 ${found.length}개 존재)`,
+              });
+              continue;
+            }
+
+            // found.length === 1
+            const page = found[0];
+            const props = page.properties || {};
+            const st = getStatusName(props["처리상태"]) || "(상태없음)";
+            const existing = getRichText(props["송장번호"]);
+            const created = formatKST(page.created_time);
+
+            miss++;
+            results.push({
+              receipt,
+              tracking,
+              status: `미일치(노션에는 있음: 처리상태='${st}'${existing ? `, 기존 송장='${existing}'` : ""}${created ? `, 접수=${created}` : ""})`,
+            });
+            continue;
+          } catch (e) {
+            miss++;
+            results.push({
+              receipt,
+              tracking,
+              status: "미일치(상태 확인 실패: 잠시 후 다시 시도)",
+            });
+            continue;
+          }
+        }
+
+        // 옵션 OFF 또는 적용(dryRun=false)일 때는 기존 방식
         miss++;
         results.push({
           receipt,
@@ -199,10 +299,10 @@ if (pass !== ADMIN_PASS) {
         continue;
       }
 
+      // === 출고준비 일치 ===
       ok++;
 
       if (dryRun) {
-        // 미리보기에서도 "이미 송장 있음" 안내
         if (hit.existingTracking && !overwrite) {
           skipped++;
           results.push({
@@ -244,6 +344,7 @@ if (pass !== ADMIN_PASS) {
       lookbackDays: lb,
       summary: { ok, miss, duplicated, updated, skipped },
       results,
+      missStatusChecked: dryRun && checkMissStatus ? Math.min(missCheckCount, MAX_MISS_STATUS_CHECK) : 0,
     });
   } catch (e) {
     console.error(e);
