@@ -185,10 +185,12 @@
         });
         const data = await res.json();
         if(!res.ok){
-          alert(data.error || "실행 실패");
-          setProgress("");
-          return;
-        }
+  const msg = data?.error || "실행 실패";
+  const hint = data?.hint ? `\n\n[해결 방법]\n${data.hint}` : "";
+  alert(msg + hint);
+  setProgress("");
+  return;
+}
 
         const s = data.summary || {};
         for(const k of Object.keys(merged)) merged[k] += (s[k] || 0);
@@ -208,6 +210,19 @@
           <span class="pill warn">건너뜀 ${merged.skipped}</span>
         </div>
       `;
+ 
+      if (dryRun && merged.ok === 0) {
+  summary.innerHTML += `
+    <div class="note" style="margin-top:10px; line-height:1.6">
+      <b>안내</b><br/>
+      일치(출고준비 매칭) 건이 0건입니다. 보통 아래 이유입니다.<br/>
+      1) 해당 접수번호가 이미 <b>출고완료</b>로 바뀌어 있음<br/>
+      2) 노션에서 아직 <b>출고준비</b>로 전환되지 않음<br/>
+      3) 조회 기간(최근 N일)이 짧음 → N을 늘려 재시도
+      4) 노션에서 해당 건의 처리상태가 <b>출고준비</b>인지 먼저 확인하세요.
+    </div>
+  `;
+}
 
       // 테이블(상위 80개만 표시)
       const show = allResults.slice(0,80);
