@@ -98,9 +98,10 @@
       color:#fff; box-shadow:0 12px 24px rgba(229,106,166,.16);
       white-space:nowrap;
     }
-    .status{ margin-top:12px; font-size:14px; line-height:1.5; min-height:22px; color:var(--muted); }
-    .status.bad{ color:#b91c1c; font-weight:950; }
-    .status.ok{ color:#0f766e; font-weight:950; }
+    .status{ margin-top:12px; font-size:14px; line-height:1.5; min-height:22px; color:var(--muted); white-space:pre-line; }
+.status.bad{ color:#b91c1c; font-weight:950; }
+.status.ok{ color:#0f766e; font-weight:950; }
+.status.warn{ color:#92400e; font-weight:950; }
 
     .result{
       margin-top:14px; padding:14px; border-radius:16px;
@@ -208,11 +209,11 @@
     const API_URL = "/api/status";
 
     function setStatus(msg, type){
-      const el = document.getElementById("status");
-      el.classList.remove("bad","ok");
-      if(type) el.classList.add(type);
-      el.textContent = msg || "";
-    }
+  const el = document.getElementById("status");
+  el.classList.remove("bad","ok","warn");
+  if(type) el.classList.add(type);
+  el.textContent = msg || "";
+}
   
   function setResult(data){
     const box = document.getElementById("result");
@@ -262,9 +263,9 @@
       setResult(null);
       const receipt = (document.getElementById("receipt").value || "").trim();
       if(!receipt){
-        setStatus("접수번호를 입력해주세요.", "bad");
-        return;
-      }
+  setStatus("접수번호를 입력해 주세요.", "warn");
+  return;
+}
 
       const btn = document.getElementById("btn");
       btn.disabled = true;
@@ -274,11 +275,22 @@
         const res = await fetch(`${API_URL}?receipt=${encodeURIComponent(receipt)}`);
         const data = await res.json().catch(()=> ({}));
         if(res.ok){
-          setStatus("✅ 조회 완료", "ok");
-          setResult(data);
-        }else{
-          setStatus(`❌ ${data.error || "조회 실패"}`, "bad");
-        }
+  setStatus("✅ 조회 완료", "ok");
+  setResult(data);
+}else if(res.status === 404){
+  setResult(null);
+  setStatus(
+    "입력하신 접수번호를 찾을 수 없어요.\n접수증에 적힌 번호를 다시 확인해 주세요. (하이픈 포함)",
+    "warn"
+  );
+}else if(res.status === 400){
+  setResult(null);
+  setStatus("접수번호를 다시 확인해 주세요.", "warn");
+}else{
+  setResult(null);
+  const msg = data?.message || "일시적으로 조회가 원활하지 않아요. 잠시 후 다시 시도해 주세요.";
+  setStatus(msg, "bad");
+}
       }catch{
         setStatus("❌ 네트워크 오류가 발생했어요. 잠시 후 다시 시도해주세요.", "bad");
       }finally{
