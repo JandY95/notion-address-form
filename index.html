@@ -55,6 +55,7 @@
         radial-gradient(900px 600px at 70% 90%, var(--season-glow-3, rgba(255,210,225,.12)), transparent 60%);
     }
 
+    /* ✅ 폭 통일(접수조회와 동일) */
     .wrap{
       width: min(820px, 92vw);
       margin: 26px auto 64px;
@@ -65,12 +66,21 @@
       position: relative;
     }
 
+    /* ✅ 헤더(브랜드 + 우측 버튼) 통일 */
+    .hero-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom: 10px;
+      flex-wrap:wrap;
+    }
+
     .top-actions{
-      position:absolute;
-      right: 6px;
-      top: 10px;
       display:flex;
       gap:10px;
+      align-items:center;
+      justify-content:flex-end;
     }
 
     .btn-top{
@@ -87,6 +97,7 @@
       cursor:pointer;
       text-decoration:none;
       user-select:none;
+      white-space:nowrap;
     }
     .btn-top:active{ transform: translateY(1px); }
 
@@ -94,7 +105,7 @@
       display:flex;
       align-items:center;
       gap:12px;
-      margin-bottom: 10px;
+      margin: 0; /* ✅ 위치 흔들림 방지 */
     }
     .mono{
       width:44px; height:44px;
@@ -178,7 +189,10 @@
       .grid{ grid-template-columns: 1fr; }
       .form{ padding: 16px; }
       .card-top{ padding: 13px 16px; }
-      .top-actions{ position:static; margin-bottom: 12px; justify-content:flex-end; }
+
+      /* ✅ 모바일에서도 헤더 정렬 통일 */
+      .hero-head{ gap:10px; }
+      .top-actions{ width:100%; justify-content:flex-end; }
     }
 
     .field{ display:flex; flex-direction:column; gap: 6px; }
@@ -418,21 +432,16 @@
     }
     .modal-body{ flex:1; }
     #postcodeWrap{ width:100%; height:100%; }
-  
-  /* 주소 찾기 버튼만 고정폭으로 */
-.addr-row .btn-find{
-  flex: 0 0 auto;   /* 늘어나지 않게 */
-  width: 140px;     /* 버튼 폭(원하는 값으로 조절 가능: 120~160 추천) */
-  padding: 12px 12px;
-}
 
-/* 모바일에서는 버튼이 아래로 내려가면서 100% */
-@media (max-width: 640px){
-  .addr-row .btn-find{
-    width: 100%;
-  }
-}
-  
+    /* 주소 찾기 버튼만 고정폭으로 */
+    .addr-row .btn-find{
+      flex: 0 0 auto;
+      width: 140px;
+      padding: 12px 12px;
+    }
+    @media (max-width: 640px){
+      .addr-row .btn-find{ width: 100%; }
+    }
   </style>
 </head>
 
@@ -440,14 +449,16 @@
   <div class="wrap">
     <!-- ===== FORM HERO ===== -->
     <header class="hero" id="heroForm">
-      <div class="top-actions">
-        <a class="btn-top" href="./status.html">🔎 접수 조회</a>
-      </div>
+      <div class="hero-head">
+        <div class="brand-row">
+          <div class="mono" aria-hidden="true"><span>C</span></div>
+          <div class="brand-text">
+            <div class="brand-name">COCORO SHOP</div>
+          </div>
+        </div>
 
-      <div class="brand-row">
-        <div class="mono" aria-hidden="true"><span>C</span></div>
-        <div class="brand-text">
-          <div class="brand-name">COCORO SHOP</div>
+        <div class="top-actions">
+          <a class="btn-top" href="./status.html">🔎 접수 조회</a>
         </div>
       </div>
 
@@ -460,14 +471,16 @@
 
     <!-- ===== RECEIPT HERO (폼 제출 후에는 이쪽만 보여줌) ===== -->
     <header class="hero hidden" id="heroReceipt">
-      <div class="top-actions">
-        <a class="btn-top" id="topStatusLink" href="./status.html">🔎 접수 조회</a>
-      </div>
+      <div class="hero-head">
+        <div class="brand-row">
+          <div class="mono" aria-hidden="true"><span>C</span></div>
+          <div class="brand-text">
+            <div class="brand-name">COCORO SHOP</div>
+          </div>
+        </div>
 
-      <div class="brand-row">
-        <div class="mono" aria-hidden="true"><span>C</span></div>
-        <div class="brand-text">
-          <div class="brand-name">COCORO SHOP</div>
+        <div class="top-actions">
+          <a class="btn-top" id="topStatusLink" href="./status.html">🔎 접수 조회</a>
         </div>
       </div>
 
@@ -513,9 +526,9 @@
             <div class="field" id="f_address" style="grid-column: 1 / -1;">
               <label for="baseAddress">주소</label>
               <div class="row addr-row">
-  <input type="text" id="baseAddress" class="readonly" readonly placeholder="‘주소 찾기’로 검색해주세요" />
-  <button type="button" class="btn btn-outline btn-find" onclick="openPostcode()">🔎 주소 찾기</button>
-</div>
+                <input type="text" id="baseAddress" class="readonly" readonly placeholder="‘주소 찾기’로 검색해주세요" />
+                <button type="button" class="btn btn-outline btn-find" onclick="openPostcode()">🔎 주소 찾기</button>
+              </div>
               <div class="hint">도로명 주소를 선택하면 자동으로 입력되요.</div>
               <div class="err">주소 찾기를 눌러 주소를 선택해주세요.</div>
             </div>
@@ -576,12 +589,6 @@
             <div class="rk">주소</div><div class="rv" id="r_address"></div>
             <div class="rk">요청사항</div><div class="rv" id="r_request"></div>
             <div class="rk">상태</div><div class="rv">접수</div>
-            <!--
-            <div class="rk">접수 조회</div>
-            <div class="rv">
-              <a id="r_statusLink" href="./status.html" style="font-weight:980;color:#b84a84;text-decoration:underline;">접수 조회</a>
-            </div>
-            -->
           </div>
         </div>
 
@@ -594,7 +601,6 @@
           <button class="btn btn-ghost" type="button" id="copyReceiptBtn">접수번호 복사</button>
           <a class="btn btn-ghost" id="goStatusBtn" href="./status.html" style="text-decoration:none;display:inline-flex;justify-content:center;align-items:center;">접수 조회</a>
           <button class="btn btn-primary" type="button" id="savePngBtn">접수증 저장</button>
-<!--          <button class="btn btn-outline" type="button" id="newEntryBtn">다시 입력</button>  -->
         </div>
 
         <div id="receiptStatus" class="status" style="margin-top:10px;"></div>
@@ -652,7 +658,7 @@
     })();
 
     // ===== API (Vercel/Netlify 공통) =====
-    const submitUrl = "/api/submit"; // ✅ Netlify는 netlify.toml 리라이트로 함수로 연결됨
+    const submitUrl = "/api/submit";
 
     function setStatus(msg, type){
       const el = document.getElementById('status');
@@ -687,25 +693,16 @@
 
     function digitsOnly(v){ return String(v||'').replace(/\D/g,''); }
 
-    // 한국 전화번호 유효성(휴대폰/지역번호 모두 허용)
     function isValidKRTel(input){
       const d = digitsOnly(input);
       if(!d.startsWith('0')) return false;
       if(d.length < 9 || d.length > 11) return false;
-
-      // 02(서울) 9~10자리
       if(d.startsWith('02')) return (d.length === 9 || d.length === 10);
-
-      // 휴대폰 010/011/016/017/018/019: 10~11자리
       if(/^01[016789]/.test(d)) return (d.length === 10 || d.length === 11);
-
-      // 일반 지역번호(0xx): 10~11자리
       if(/^0\d{2}/.test(d)) return (d.length === 10 || d.length === 11);
-
       return false;
     }
 
-    // 보기 좋게 자동 하이픈(입력 편의)
     function formatKRTel(v){
       const d = digitsOnly(v).slice(0, 11);
       if(d.startsWith('02')){
@@ -749,10 +746,9 @@
           updateFullAddress();
           closePostcode();
         },
-        onclose: () => { /* 사용자가 닫은 경우 */ }
+        onclose: () => {}
       });
 
-      // embed로 모달 중앙에 표시
       postcodeInstance.embed(wrap);
     }
     function closePostcode(){
@@ -775,23 +771,12 @@
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    function showFormScreen(){
-      document.getElementById('heroReceipt').classList.add('hidden');
-      document.getElementById('receiptCard').classList.add('hidden');
-
-      document.getElementById('heroForm').classList.remove('hidden');
-      document.getElementById('formCard').classList.remove('hidden');
-
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
     // ===== 클립보드 =====
     async function copyText(t){
       try{
         await navigator.clipboard.writeText(t);
         return true;
       }catch{
-        // fallback
         const ta = document.createElement('textarea');
         ta.value = t;
         document.body.appendChild(ta);
@@ -804,25 +789,21 @@
 
     // ===== 접수증 PNG 저장(캔버스) =====
     function downloadReceiptPng(payload){
-      // payload: {receiptTitle, timeText, name, phone, address, request}
       const w = 1100;
       const h = 620;
       const canvas = document.createElement('canvas');
       canvas.width = w; canvas.height = h;
       const ctx = canvas.getContext('2d');
 
-      // 배경
       ctx.fillStyle = "#ffffff";
       ctx.fillRect(0,0,w,h);
 
-      // 상단 라인/포인트
       const grad = ctx.createLinearGradient(0,0,w,0);
       grad.addColorStop(0, getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || "#e56aa6");
       grad.addColorStop(1, getComputedStyle(document.documentElement).getPropertyValue('--accent2').trim() || "#7aa7ff");
       ctx.fillStyle = grad;
       ctx.fillRect(0,0,w,10);
 
-      // 브랜드
       ctx.fillStyle = "#111827";
       ctx.font = "bold 38px Arial";
       ctx.fillText("COCORO SHOP", 48, 70);
@@ -831,7 +812,6 @@
       ctx.font = "bold 22px Arial";
       ctx.fillText("접수증", 48, 108);
 
-      // 우측 메타
       ctx.textAlign = "right";
       ctx.fillStyle = "#374151";
       ctx.font = "bold 22px Arial";
@@ -841,7 +821,6 @@
       ctx.fillText(`접수시간: ${payload.timeText}`, w-48, 104);
       ctx.textAlign = "left";
 
-      // 구분선
       ctx.strokeStyle = "#e5e7eb";
       ctx.setLineDash([6,6]);
       ctx.beginPath();
@@ -850,7 +829,6 @@
       ctx.stroke();
       ctx.setLineDash([]);
 
-      // 내용
       const leftK = 80;
       const leftV = 230;
       let y = 210;
@@ -877,11 +855,6 @@
       y += rowGap;
       labelStyle(); ctx.fillText("상태", leftK, y);
       valueStyle(); ctx.fillText("접수", leftV, y);
-
-      // 하단 안내
-      // ctx.fillStyle="#6b7280";
-      // ctx.font="bold 20px Arial";
-      // ctx.fillText("접수 조회: status.html에서 접수번호로 확인 가능", 48, h-50);
 
       const url = canvas.toDataURL("image/png");
       const a = document.createElement('a');
@@ -972,17 +945,15 @@
           body: JSON.stringify(payload)
         });
 
-        // ✅ 응답이 비어있거나 JSON이 깨져도 안전하게 처리
-const raw = await response.text();
-let result = {};
-try { result = raw ? JSON.parse(raw) : {}; } catch { result = {}; }
+        const raw = await response.text();
+        let result = {};
+        try { result = raw ? JSON.parse(raw) : {}; } catch { result = {}; }
 
         if (response.ok) {
           const receiptTitle = result.receiptTitle || result.receipt || '';
           const now = new Date();
           const timeText = `${now.getFullYear()}. ${now.getMonth()+1}. ${now.getDate()}. ${now.toLocaleTimeString('ko-KR')}`;
 
-          // 접수증 값 채우기(블라인딩 없음)
           document.getElementById('r_receipt').textContent = receiptTitle || '(접수번호 없음)';
           document.getElementById('r_time').textContent = timeText;
           document.getElementById('r_name').textContent = customerName;
@@ -990,19 +961,13 @@ try { result = raw ? JSON.parse(raw) : {}; } catch { result = {}; }
           document.getElementById('r_address').textContent = fullAddress;
           document.getElementById('r_request').textContent = request || '없음';
 
-          // 접수조회 링크(해시로 자동입력)
           const statusHref = `./status.html#receipt=${encodeURIComponent(receiptTitle)}`;
           const goStatusBtn = document.getElementById('goStatusBtn');
-if (goStatusBtn) goStatusBtn.href = statusHref;
+          if (goStatusBtn) goStatusBtn.href = statusHref;
 
-const topStatusLink = document.getElementById('topStatusLink');
-if (topStatusLink) topStatusLink.href = statusHref;
+          const topStatusLink = document.getElementById('topStatusLink');
+          if (topStatusLink) topStatusLink.href = statusHref;
 
-// r_statusLink는 화면에서 주석처리(삭제)했을 수 있으니 있을 때만 적용
-const rStatusLink = document.getElementById('r_statusLink');
-if (rStatusLink) rStatusLink.href = statusHref;
-
-          // 버튼 동작 저장용
           document.getElementById('copyReceiptBtn').onclick = async () => {
             const ok = await copyText(receiptTitle);
             setReceiptStatus(ok ? '✅ 접수번호를 복사했어요.' : '❌ 복사에 실패했어요.', ok ? 'ok' : 'bad');
@@ -1019,28 +984,15 @@ if (rStatusLink) rStatusLink.href = statusHref;
             });
             setReceiptStatus('✅ 접수증 저장이 준비되었습니다.', 'ok');
           };
-/*
-          document.getElementById('newEntryBtn').onclick = () => {
-            // 폼 초기화
-            document.getElementById('form').reset();
-            document.getElementById('postcode').value = '';
-            document.getElementById('baseAddress').value = '';
-            document.getElementById('fullAddress').value = '';
-            setStatus('');
-            setReceiptStatus('');
-            clearErrors();
-            showFormScreen();
-          };
-*/
-          // 폼 화면 숨기고 접수증 화면만 보여주기(요청사항)
+
           showReceiptScreen();
         } else {
           setStatus(`❌ 저장 실패: ${result.error || raw || '오류'}`, 'bad');
         }
       } catch (error) {
-  console.error(error);
-  setStatus(`❌ 저장 후 화면 표시 중 오류가 발생했어요. 다시 시도해주세요. (${error?.message || 'unknown'})`, 'bad');
-} finally {
+        console.error(error);
+        setStatus(`❌ 저장 후 화면 표시 중 오류가 발생했어요. 다시 시도해주세요. (${error?.message || 'unknown'})`, 'bad');
+      } finally {
         btn.disabled = false;
         btn.style.filter = '';
       }
