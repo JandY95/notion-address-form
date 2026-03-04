@@ -77,7 +77,7 @@
           <label style="margin:0;"><input type="checkbox" id="overwrite" /> 기존 송장번호도 덮어쓰기</label>
           <label style="margin:0;"><input type="checkbox" id="setDone" checked /> 적용 시 출고완료+출고일시(오늘) 자동</label>
 
-          <!-- ✅ 추가: 미일치 상태 확인 옵션 -->
+          <!-- ✅ 기본 OFF (checked 없음) -->
           <label style="margin:0;">
             <input type="checkbox" id="checkMissStatus" />
             미일치 상태 확인(느림)
@@ -163,8 +163,8 @@
       const setDone = document.getElementById("setDone").checked;
       const lookbackDays = Number(document.getElementById("lookback").value || 14);
 
-      // ✅ 추가
-      const checkMissStatus = document.getElementById("checkMissStatus")?.checked ?? true;
+      // ✅ 미일치 상태 확인 옵션(기본 OFF)
+      const checkMissStatus = document.getElementById("checkMissStatus")?.checked ?? false;
 
       if(!pass){ alert("비밀번호를 입력해주세요."); return; }
       if(!parsedItems.length){ alert("엑셀 파일을 먼저 선택/드롭 해주세요."); return; }
@@ -191,7 +191,7 @@
             setDone,
             dryRun,
             lookbackDays,
-            checkMissStatus // ✅ 추가
+            checkMissStatus
           })
         });
 
@@ -211,7 +211,6 @@
 
       setProgress("");
 
-      // 요약 표시
       summary.innerHTML = `
         <div class="note">
           <b>결과 요약</b> —
@@ -223,7 +222,6 @@
         </div>
       `;
 
-      // ✅ 0건 안내
       if (dryRun && merged.ok === 0) {
         summary.innerHTML += `
           <div class="note" style="margin-top:10px; line-height:1.6">
@@ -237,7 +235,6 @@
         `;
       }
 
-      // 테이블(상위 80개만 표시)
       const show = allResults.slice(0,80);
       let html = `<table><thead><tr><th>접수번호</th><th>운송장번호</th><th>상태</th></tr></thead><tbody>`;
       for(const r of show){
@@ -265,7 +262,6 @@
       });
     }
 
-    // drag & drop
     drop.addEventListener("dragover", (e)=>{ e.preventDefault(); drop.classList.add("drag"); });
     drop.addEventListener("dragleave", ()=> drop.classList.remove("drag"));
     drop.addEventListener("drop", (e)=>{
