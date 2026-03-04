@@ -138,9 +138,19 @@ export default async function handler(req, res) {
       lookbackDays,
     } = req.body || {};
 
-    if (!ADMIN_PASS || pass !== ADMIN_PASS) {
-      return res.status(401).json({ error: "Unauthorized" });
-    }
+    if (!ADMIN_PASS) {
+  return res.status(500).json({
+    error: "서버 설정 오류: TRACKING_ADMIN_PASS가 설정되지 않았습니다.",
+    hint: "Vercel > Settings > Environment Variables 에 TRACKING_ADMIN_PASS를 Production으로 추가한 뒤 Redeploy 하세요."
+  });
+}
+
+if (pass !== ADMIN_PASS) {
+  return res.status(401).json({
+    error: "운영자 비밀번호가 올바르지 않습니다.",
+    hint: "비밀번호를 다시 확인해 주세요."
+  });
+}
     if (!NOTION_DB) {
       return res.status(500).json({ error: "Missing NOTION_DATABASE_ID" });
     }
