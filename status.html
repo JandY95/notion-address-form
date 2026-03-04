@@ -41,10 +41,23 @@
         radial-gradient(900px 600px at 88% 18%, var(--season-glow-2, rgba(122,167,255,.14)), transparent 60%),
         radial-gradient(900px 600px at 70% 90%, var(--season-glow-3, rgba(255,210,225,.12)), transparent 60%);
     }
-    .wrap{ width:min(760px,92vw); margin:30px auto 64px; }
+
+    /* ✅ index.html과 폭/여백 통일 */
+    .wrap{ width:min(820px,92vw); margin:26px auto 64px; }
 
     .hero{ padding:14px 8px 10px; position:relative; }
-    .top-actions{ position:absolute; right:6px; top:10px; display:flex; gap:10px; }
+
+    /* ✅ 헤더(브랜드 + 버튼) 통일 */
+    .hero-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:10px;
+      flex-wrap:wrap;
+    }
+    .top-actions{ display:flex; gap:10px; align-items:center; justify-content:flex-end; }
+
     .btn-top{
       display:inline-flex; align-items:center; gap:8px;
       border:1px solid rgba(229,106,166,.35);
@@ -52,15 +65,17 @@
       backdrop-filter: blur(10px);
       padding:10px 14px; border-radius:14px;
       font-weight:950; color:#b84a84; cursor:pointer; text-decoration:none;
+      white-space:nowrap;
     }
 
-    .brand-row{ display:flex; align-items:center; gap:12px; margin-bottom:10px; }
+    .brand-row{ display:flex; align-items:center; gap:12px; margin:0; }
     .mono{
       width:44px;height:44px;border-radius:16px;
       background:linear-gradient(135deg, rgba(229,106,166,.95), rgba(122,167,255,.95));
       box-shadow:0 14px 30px rgba(229,106,166,.16);
       display:flex; align-items:center; justify-content:center;
       color:#fff; font-weight:950; letter-spacing:.8px; position:relative; overflow:hidden;
+      flex:0 0 auto;
     }
     .mono::after{ content:""; position:absolute; inset:-40%;
       background:radial-gradient(circle at 30% 30%, rgba(255,255,255,.35), transparent 45%);
@@ -68,6 +83,7 @@
     }
     .mono span{ position:relative; z-index:1; font-size:18px; }
     .brand-name{ font-weight:950; letter-spacing:1px; font-size:14px; opacity:.95; }
+
     .title{ margin:8px 0 6px; font-size:clamp(28px,4.8vw,40px); font-weight:980; letter-spacing:-.5px; }
     .subtitle{ margin:0; color:var(--muted); line-height:1.7; font-size:14.5px; }
 
@@ -115,36 +131,36 @@
       .wrap{ margin:18px auto 46px; }
       .form{ padding:16px; }
       .row{ flex-direction:column; align-items:stretch; }
-      .top-actions{ position:static; margin-bottom:12px; justify-content:flex-end; }
+
+      /* ✅ 모바일에서도 헤더 정렬 통일 */
+      .hero-head{ gap:10px; }
+      .top-actions{ width:100%; justify-content:flex-end; }
     }
 
-/* 조회 버튼을 고정폭(주소 찾기 버튼 느낌)으로 */
-.btn-query{
-  flex: 0 0 auto;     /* row에서 늘어나지 않게 */
-  width: 140px;       /* 주소찾기랑 동일하게 */
-  padding: 12px 12px;
-}
-
-/* 모바일에서는 버튼이 아래로 내려가면 100% */
-@media (max-width: 640px){
-  .btn-query{
-    width: 100%;
-  }
-}
-    
+    /* 조회 버튼 고정폭 */
+    .btn-query{
+      flex: 0 0 auto;
+      width: 140px;
+      padding: 12px 12px;
+    }
+    @media (max-width: 640px){
+      .btn-query{ width: 100%; }
+    }
   </style>
 </head>
 <body>
   <div class="wrap">
     <header class="hero">
-      <div class="top-actions">
-        <a class="btn-top" href="./index.html">📦 배송 정보 입력</a>
-      </div>
+      <div class="hero-head">
+        <div class="brand-row">
+          <div class="mono"><span>C</span></div>
+          <div>
+            <div class="brand-name">COCORO SHOP</div>
+          </div>
+        </div>
 
-      <div class="brand-row">
-        <div class="mono"><span>C</span></div>
-        <div>
-          <div class="brand-name">COCORO SHOP</div>
+        <div class="top-actions">
+          <a class="btn-top" href="./index.html">📦 배송 정보 입력</a>
         </div>
       </div>
 
@@ -171,7 +187,6 @@
   </div>
 
   <script>
-    // ===== Monthly Theme (auto) =====
     (function applyMonthlyTheme(){
       const m = new Date().getMonth() + 1;
       const root = document.documentElement;
@@ -214,43 +229,41 @@
       if(type) el.classList.add(type);
       el.textContent = msg || "";
     }
-  
-  function setResult(data){
-    const box = document.getElementById("result");
-    if(!data){ 
-      box.style.display="none"; 
-      box.innerHTML=""; 
-      return; 
-    }
 
-    // ✅ 상태 정규화: "출고 완료" 같은 띄어쓰기/공백 제거 대비
-    const statusRaw = (data.status || "").trim();
-    const statusNorm = statusRaw.replace(/\s+/g, ""); // 공백 제거
-    const tracking = (data.trackingNumber || "").trim();
-
-    // ✅ "출고완료"일 때 + 송장번호가 있을 때만 표시
-    const showTracking = (statusNorm === "출고완료") && !!tracking;
-
-    const trackingRow = showTracking
-      ? `<div class="k">송장번호</div><div class="v">CJ대한통운 ${tracking}</div>`
-      : ``;
-
-    box.style.display="block";
-    box.innerHTML = `
-      <div class="kv">
-        <div class="k">접수번호</div><div class="v">${data.receipt || ""}</div>
-        <div class="k">처리상태</div><div class="v">${statusRaw || ""}</div>
-        ${trackingRow}
-      </div>
-      ${
-        statusNorm !== "출고완료"
-        ? `<div style="margin-top:10px;color:var(--muted);font-size:13px;line-height:1.5;">
-             송장번호는 <b>출고완료</b> 상태가 되면 표시됩니다.
-           </div>`
-        : ``
+    function setResult(data){
+      const box = document.getElementById("result");
+      if(!data){
+        box.style.display="none";
+        box.innerHTML="";
+        return;
       }
-    `;
-  }
+
+      const statusRaw = (data.status || "").trim();
+      const statusNorm = statusRaw.replace(/\s+/g, "");
+      const tracking = (data.trackingNumber || "").trim();
+
+      const showTracking = (statusNorm === "출고완료") && !!tracking;
+
+      const trackingRow = showTracking
+        ? `<div class="k">송장번호</div><div class="v">CJ대한통운 ${tracking}</div>`
+        : ``;
+
+      box.style.display="block";
+      box.innerHTML = `
+        <div class="kv">
+          <div class="k">접수번호</div><div class="v">${data.receipt || ""}</div>
+          <div class="k">처리상태</div><div class="v">${statusRaw || ""}</div>
+          ${trackingRow}
+        </div>
+        ${
+          statusNorm !== "출고완료"
+          ? `<div style="margin-top:10px;color:var(--muted);font-size:13px;line-height:1.5;">
+               송장번호는 <b>출고완료</b> 상태가 되면 표시됩니다.
+             </div>`
+          : ``
+        }
+      `;
+    }
 
     function getReceiptFromHash(){
       const hash = (location.hash || "").replace(/^#/, "");
