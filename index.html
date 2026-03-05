@@ -254,9 +254,6 @@
       gap: 10px;
       flex-wrap:wrap;
     }
-    @media (max-width: 640px){
-      .actions{ flex-direction: column; }
-    }
 
     /* 에러 */
     .error-box{
@@ -438,7 +435,8 @@
 
   /* ✅ 모바일에서도 헤더 정렬 통일 */
   .hero-head{ gap:10px; }
-  .top-actions{ width:100%; justify-content:flex-end; }  
+  .top-actions{ width:100%; justify-content:flex-end; }
+  .actions{ flex-direction: column; }
   .addr-row{
     flex-direction: column;
     align-items: stretch;
