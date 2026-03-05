@@ -44,10 +44,8 @@
 
     /* ✅ index.html과 폭/여백 통일 */
     .wrap{ width:min(820px,92vw); margin:26px auto 64px; }
-
     .hero{ padding:14px 8px 10px; position:relative; }
 
-    /* ✅ 헤더(브랜드 + 버튼) 통일 */
     .hero-head{
       display:flex;
       align-items:center;
@@ -65,12 +63,10 @@
       backdrop-filter: blur(10px);
       padding:10px 14px; border-radius:14px;
       font-weight:950; color:#b84a84; cursor:pointer; text-decoration:none;
-      white-space:nowrap;
-      user-select:none;
+      white-space:nowrap; user-select:none;
     }
     .btn-top:active{ transform: translateY(1px); }
 
-    /* ✅ 브랜드 영역 */
     .brand-row{ display:flex; align-items:center; gap:12px; margin:0; }
     .mono{
       width:44px;height:44px;border-radius:16px;
@@ -109,7 +105,7 @@
       color:var(--muted); font-size:13.2px; line-height:1.55;
     }
     .form{ padding:18px; }
-    label{ font-size:14px; font-weight:950; }
+    label{ font-size:14px; font-weight:950; display:block; }
     input{
       width:100%; border:1px solid var(--line); border-radius:14px;
       padding:12px 12px; font-size:16px; outline:none; background:#fff;
@@ -124,12 +120,33 @@
       font-size:16px; font-weight:950; cursor:pointer; min-height:48px;
       background:linear-gradient(135deg, var(--accent), var(--accent2));
       color:#fff; box-shadow:0 12px 24px rgba(229,106,166,.16);
-      white-space:nowrap;
-      user-select:none;
+      white-space:nowrap; user-select:none;
     }
     .btn:active{ transform: translateY(1px); }
 
-    .status{ margin-top:12px; font-size:14px; line-height:1.5; min-height:22px; color:var(--muted); white-space:pre-line; }
+    .btn-ghost{
+      display:inline-flex; align-items:center; justify-content:center;
+      border-radius:14px;
+      padding:10px 14px;
+      font-size:14px;
+      font-weight:950;
+      cursor:pointer;
+      background: rgba(255,255,255,.75);
+      border:1px solid rgba(229,106,166,.30);
+      color:#b84a84;
+      user-select:none;
+      min-height:44px;
+      white-space:nowrap;
+    }
+    .btn-ghost:active{ transform: translateY(1px); }
+
+    /* 조회 버튼 고정폭 */
+    .btn-query{ flex: 0 0 auto; width: 140px; padding: 12px 12px; }
+
+    .status{
+      margin-top:12px; font-size:14px; line-height:1.5; min-height:22px;
+      color:var(--muted); white-space:pre-line;
+    }
     .status.bad{ color:#b91c1c; font-weight:950; }
     .status.ok{ color:#0f766e; font-weight:950; }
     .status.warn{ color:#92400e; font-weight:950; }
@@ -142,29 +159,117 @@
     .k{ color:var(--muted); font-weight:950; }
     .v{ font-weight:980; }
 
-    /* 조회 버튼 고정폭(PC) */
-    .btn-query{
-      flex: 0 0 auto;
-      width: 140px;
-      padding: 12px 12px;
+    .helper-row{
+      margin-top:10px;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:flex-start;
     }
 
-    /* ✅ 모바일: 입력칸 위 / 버튼 아래 + 헤더 정렬 통일 */
+    /* ===== 접수번호 다시 확인 UI ===== */
+    .recover{
+      margin-top:12px;
+      padding:14px;
+      border-radius:16px;
+      border:1px solid rgba(229,231,235,.9);
+      background: rgba(255,255,255,.85);
+    }
+    .recover-head{
+      font-weight:980;
+      margin-bottom:6px;
+      letter-spacing:-0.2px;
+    }
+    .recover-note{
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.55;
+      margin-bottom:10px;
+    }
+    .recover-grid{
+      display:grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap:10px;
+      margin-top:8px;
+    }
+    .recover-actions{
+      margin-top:10px;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+    .recover-list{
+      margin-top:12px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+    .recover-item{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+      padding:12px;
+      border-radius:14px;
+      border:1px solid rgba(229,231,235,.9);
+      background:#fff;
+    }
+    .recover-left{ min-width: 0; }
+    .recover-receipt{
+      font-weight:980;
+      word-break:break-all;
+      line-height:1.25;
+    }
+    .recover-meta{
+      margin-top:4px;
+      color:var(--muted);
+      font-size:12.8px;
+      line-height:1.4;
+    }
+    .recover-right{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+      align-items:center;
+      flex:0 0 auto;
+    }
+    .btn-mini{
+      border:none;
+      border-radius:12px;
+      padding:10px 12px;
+      font-size:13px;
+      font-weight:950;
+      cursor:pointer;
+      background:linear-gradient(135deg, var(--accent), var(--accent2));
+      color:#fff;
+      white-space:nowrap;
+      user-select:none;
+      min-height:40px;
+    }
+    .btn-mini-ghost{
+      background: rgba(255,255,255,.9);
+      color:#b84a84;
+      border:1px solid rgba(229,106,166,.30);
+    }
+
     @media (max-width:640px){
       .wrap{ margin:18px auto 46px; }
       .form{ padding:16px; }
-
+      .row{ flex-direction:column; align-items:stretch; }
+      .btn-query{ width:100%; }
       .hero-head{ gap:10px; }
       .top-actions{ width:100%; justify-content:flex-end; }
-
-      /* 입력칸 위 / 버튼 아래 */
-      .row{ flex-direction:column; align-items:stretch; }
-
-      /* 버튼 100% */
-      .btn-query{ width: 100%; }
+      .recover-grid{ grid-template-columns: 1fr; }
+      .recover-item{ flex-direction:column; }
+      .recover-right{ width:100%; justify-content:flex-start; }
+      .btn-mini{ width:100%; justify-content:center; }
     }
   </style>
 </head>
+
 <body>
   <div class="wrap">
     <header class="hero">
@@ -193,18 +298,56 @@
       <div class="form">
         <label for="receipt">접수번호</label>
         <div class="row">
-          <input id="receipt" type="text" placeholder="" />
-          <!-- ✅ btn-query 중복 제거 -->
+          <input id="receipt" type="text" placeholder="예: 260101-123456-김서연-7890" />
           <button id="btn" class="btn btn-query" type="button">조회</button>
+        </div>
+
+        <div class="helper-row">
+          <button id="btnRecoverToggle" class="btn-ghost" type="button">🔎 접수번호 다시 확인</button>
         </div>
 
         <div id="status" class="status"></div>
         <div id="result" class="result" style="display:none;"></div>
+
+        <!-- ✅ 접수번호 다시 확인 박스 -->
+        <div id="recoverBox" class="recover" style="display:none;">
+          <div class="recover-head">접수번호 다시 확인</div>
+          <div class="recover-note">
+            이름 / 연락처 / 접수일(날짜)로 접수번호를 찾을 수 있어요.<br/>
+            같은 날 주문이 2건 이상이면 목록으로 보여드려요. (개인정보 보호를 위해 일부 정보는 가려서 표시돼요)
+          </div>
+
+          <div class="recover-grid">
+            <div>
+              <label for="recoverName">이름</label>
+              <input id="recoverName" type="text" placeholder="예: 김서연" autocomplete="name" />
+            </div>
+
+            <div>
+              <label for="recoverPhone">연락처</label>
+              <input id="recoverPhone" type="tel" placeholder="예: 010-1234-5678" inputmode="tel" autocomplete="tel" />
+            </div>
+
+            <div>
+              <label for="recoverDate">접수일</label>
+              <input id="recoverDate" type="date" />
+            </div>
+          </div>
+
+          <div class="recover-actions">
+            <button id="btnRecover" class="btn-mini" type="button">조회하기</button>
+            <button id="btnRecoverClose" class="btn-mini btn-mini-ghost" type="button">닫기</button>
+          </div>
+
+          <div id="recoverStatus" class="status"></div>
+          <div id="recoverList" class="recover-list"></div>
+        </div>
       </div>
     </section>
   </div>
 
   <script>
+    // ===== Monthly Theme (auto) =====
     (function applyMonthlyTheme(){
       const m = new Date().getMonth() + 1;
       const root = document.documentElement;
@@ -240,23 +383,13 @@
     })();
 
     const API_URL = "/api/status";
-    
-    // ✅ placeholder를 "오늘날짜-현재시간" 기준으로 자동 생성 (예: 260304-101530-김서연-7890)
-    (function setReceiptPlaceholder(){
-      const input = document.getElementById("receipt");
-      if(!input) return;
+    const RECOVER_API_URL = "/api/recover";
 
-      const d = new Date();
-
-      const yy = String(d.getFullYear()).slice(-2);        // 26
-      const mm = String(d.getMonth() + 1).padStart(2, "0");// 03
-      const dd = String(d.getDate()).padStart(2, "0");     // 04
-      const hh = String(d.getHours()).padStart(2, "0");    // 10
-      const mi = String(d.getMinutes()).padStart(2, "0");  // 15
-      const ss = String(d.getSeconds()).padStart(2, "0");  // 30
-
-      input.placeholder = `예: ${yy}${mm}${dd}-${hh}${mi}${ss}-김서연-7890`;
-    })();
+    function esc(s){
+      return String(s||"").replace(/[&<>"']/g, m => ({
+        '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+      }[m]));
+    }
 
     function setStatus(msg, type){
       const el = document.getElementById("status");
@@ -278,16 +411,15 @@
       const tracking = (data.trackingNumber || "").trim();
 
       const showTracking = (statusNorm === "출고완료") && !!tracking;
-
       const trackingRow = showTracking
-        ? `<div class="k">송장번호</div><div class="v">CJ대한통운 ${tracking}</div>`
+        ? `<div class="k">송장번호</div><div class="v">CJ대한통운 ${esc(tracking)}</div>`
         : ``;
 
       box.style.display="block";
       box.innerHTML = `
         <div class="kv">
-          <div class="k">접수번호</div><div class="v">${data.receipt || ""}</div>
-          <div class="k">처리상태</div><div class="v">${statusRaw || ""}</div>
+          <div class="k">접수번호</div><div class="v">${esc(data.receipt || "")}</div>
+          <div class="k">처리상태</div><div class="v">${esc(statusRaw || "")}</div>
           ${trackingRow}
         </div>
         ${
@@ -306,6 +438,24 @@
       const params = new URLSearchParams(hash);
       return (params.get("receipt") || "").trim();
     }
+
+    function digitsOnly(v){ return String(v||"").replace(/\D/g,""); }
+
+    // 예시 placeholder를 "오늘 YYMMDD-HHMMSS-김서연-7890" 형태로 갱신
+    function setReceiptPlaceholder(){
+      const now = new Date();
+      const kst = new Date(now.getTime() + 9*60*60*1000);
+      const yy = String(kst.getUTCFullYear()).slice(-2);
+      const mm = String(kst.getUTCMonth()+1).padStart(2,"0");
+      const dd = String(kst.getUTCDate()).padStart(2,"0");
+      const hh = String(kst.getUTCHours()).padStart(2,"0");
+      const mi = String(kst.getUTCMinutes()).padStart(2,"0");
+      const ss = String(kst.getUTCSeconds()).padStart(2,"0");
+      const ex = `${yy}${mm}${dd}-${hh}${mi}${ss}-김서연-7890`;
+      const input = document.getElementById("receipt");
+      if(input) input.placeholder = `예: ${ex}`;
+    }
+    setReceiptPlaceholder();
 
     async function doQuery(){
       setResult(null);
@@ -356,6 +506,277 @@
       document.getElementById("receipt").value = fromHash;
       doQuery();
     }
+
+    // ===== 접수번호 다시 확인 =====
+    const recoverBox = document.getElementById("recoverBox");
+    const btnRecoverToggle = document.getElementById("btnRecoverToggle");
+    const btnRecoverClose = document.getElementById("btnRecoverClose");
+    const btnRecover = document.getElementById("btnRecover");
+    const recoverStatus = document.getElementById("recoverStatus");
+    const recoverList = document.getElementById("recoverList");
+
+    const recoverName = document.getElementById("recoverName");
+    const recoverPhone = document.getElementById("recoverPhone");
+    const recoverDate = document.getElementById("recoverDate");
+
+    // 기본 날짜: 오늘
+    (function setRecoverDefaultDate(){
+      const now = new Date();
+      const kst = new Date(now.getTime() + 9*60*60*1000);
+      const yyyy = kst.getUTCFullYear();
+      const mm = String(kst.getUTCMonth()+1).padStart(2,"0");
+      const dd = String(kst.getUTCDate()).padStart(2,"0");
+      recoverDate.value = `${yyyy}-${mm}-${dd}`;
+    })();
+
+    function setRecoverStatus(msg, type){
+      recoverStatus.classList.remove("bad","ok","warn");
+      if(type) recoverStatus.classList.add(type);
+      recoverStatus.textContent = msg || "";
+    }
+
+    btnRecoverToggle.addEventListener("click", ()=>{
+      const open = recoverBox.style.display !== "none";
+      recoverBox.style.display = open ? "none" : "block";
+      recoverList.innerHTML = "";
+      setRecoverStatus("", "");
+      if(!open) recoverName.focus();
+    });
+
+    btnRecoverClose.addEventListener("click", ()=>{
+      recoverBox.style.display = "none";
+      recoverList.innerHTML = "";
+      setRecoverStatus("", "");
+    });
+
+    // 간단한 전화 자동 정리(보기만 좋게)
+    recoverPhone.addEventListener("input", (e)=>{
+      const d = digitsOnly(e.target.value).slice(0, 11);
+      if(d.startsWith("02")){
+        // 02-xxxx-xxxx
+        if(d.length <= 2) e.target.value = d;
+        else if(d.length <= 5) e.target.value = d.replace(/(\d{2})(\d{1,3})/, "$1-$2");
+        else if(d.length <= 9) e.target.value = d.replace(/(\d{2})(\d{3})(\d{1,4})/, "$1-$2-$3");
+        else e.target.value = d.replace(/(\d{2})(\d{4})(\d{1,4})/, "$1-$2-$3");
+      }else{
+        if(d.length <= 3) e.target.value = d;
+        else if(d.length <= 7) e.target.value = d.replace(/(\d{3})(\d{1,4})/, "$1-$2");
+        else e.target.value = d.replace(/(\d{3})(\d{3,4})(\d{1,4})/, "$1-$2-$3");
+      }
+    });
+
+    function maskDetail(detail){
+      if(!detail) return "";
+      return "상세주소(가림)";
+    }
+
+    // “가린 접수증” PNG 저장
+    function downloadReceiptMaskedPng(item){
+      const w = 1100;
+      const h = 560;
+      const canvas = document.createElement("canvas");
+      canvas.width = w; canvas.height = h;
+      const ctx = canvas.getContext("2d");
+
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0,0,w,h);
+
+      const grad = ctx.createLinearGradient(0,0,w,0);
+      grad.addColorStop(0, getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || "#e56aa6");
+      grad.addColorStop(1, getComputedStyle(document.documentElement).getPropertyValue('--accent2').trim() || "#7aa7ff");
+      ctx.fillStyle = grad;
+      ctx.fillRect(0,0,w,10);
+
+      ctx.fillStyle = "#111827";
+      ctx.font = "bold 38px Arial";
+      ctx.fillText("COCORO SHOP", 48, 70);
+
+      ctx.fillStyle = "#6b7280";
+      ctx.font = "bold 22px Arial";
+      ctx.fillText("접수증(재발급)", 48, 108);
+
+      ctx.textAlign = "right";
+      ctx.fillStyle = "#374151";
+      ctx.font = "bold 22px Arial";
+      ctx.fillText(`접수번호: ${item.receipt}`, w-48, 70);
+      ctx.fillStyle = "#6b7280";
+      ctx.font = "bold 20px Arial";
+      ctx.fillText(`접수시간: ${item.createdKST || ""}`, w-48, 104);
+      ctx.textAlign = "left";
+
+      ctx.strokeStyle = "#e5e7eb";
+      ctx.setLineDash([6,6]);
+      ctx.beginPath();
+      ctx.moveTo(48, 140);
+      ctx.lineTo(w-48, 140);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      const leftK = 80;
+      const leftV = 260;
+      let y = 220;
+      const rowGap = 70;
+
+      const labelStyle = () => { ctx.fillStyle="#6b7280"; ctx.font="bold 24px Arial"; };
+      const valueStyle = () => { ctx.fillStyle="#111827"; ctx.font="bold 28px Arial"; };
+
+      labelStyle(); ctx.fillText("연락처", leftK, y);
+      valueStyle(); ctx.fillText(item.phoneMasked || "", leftV, y);
+
+      y += rowGap;
+      labelStyle(); ctx.fillText("주소", leftK, y);
+      valueStyle();
+      const addr = item.baseAddress ? `${item.baseAddress} ${maskDetail(item.detailAddress)}` : "주소 정보(가림)";
+      wrapText(ctx, addr, leftV, y, w-48-leftV, 32);
+
+      y += rowGap + 20;
+      labelStyle(); ctx.fillText("요청사항", leftK, y);
+      valueStyle(); ctx.fillText((item.request || "없음").slice(0, 26), leftV, y);
+
+      y += rowGap;
+      labelStyle(); ctx.fillText("안내", leftK, y);
+      ctx.fillStyle="#111827"; ctx.font="bold 22px Arial";
+      ctx.fillText("개인정보 보호를 위해 일부 정보가 가려져 있어요.", leftV, y);
+
+      const url = canvas.toDataURL("image/png");
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `COCORO_접수증재발급_${item.receipt}.png`;
+      a.click();
+    }
+
+    function wrapText(ctx, text, x, y, maxWidth, lineHeight){
+      const words = String(text||'').split(' ');
+      let line = '';
+      let yy = y;
+      for(let n=0;n<words.length;n++){
+        const testLine = line + words[n] + ' ';
+        const metrics = ctx.measureText(testLine);
+        if(metrics.width > maxWidth && n>0){
+          ctx.fillText(line, x, yy);
+          line = words[n] + ' ';
+          yy += lineHeight;
+        }else{
+          line = testLine;
+        }
+      }
+      ctx.fillText(line, x, yy);
+    }
+
+    async function doRecover(){
+      recoverList.innerHTML = "";
+      setRecoverStatus("", "");
+
+      const name = (recoverName.value || "").trim();
+      const phone = (recoverPhone.value || "").trim();
+      const date = (recoverDate.value || "").trim();
+
+      if(!name || name.replace(/\s+/g,"").length < 2){
+        setRecoverStatus("이름을 정확히 입력해 주세요.", "warn");
+        recoverName.focus();
+        return;
+      }
+      const pd = digitsOnly(phone);
+      if(pd.length < 9 || pd.length > 11){
+        setRecoverStatus("연락처를 정확히 입력해 주세요. (숫자 9~11자리)", "warn");
+        recoverPhone.focus();
+        return;
+      }
+      if(!date){
+        setRecoverStatus("접수일(날짜)을 선택해 주세요.", "warn");
+        recoverDate.focus();
+        return;
+      }
+
+      btnRecover.disabled = true;
+      setRecoverStatus("확인 중입니다…", "");
+
+      try{
+        const res = await fetch(RECOVER_API_URL, {
+          method:"POST",
+          headers:{ "Content-Type":"application/json" },
+          body: JSON.stringify({ name, phone, date })
+        });
+
+        const data = await res.json().catch(()=> ({}));
+
+        if(!res.ok){
+          setRecoverStatus("현재 확인이 원활하지 않아요. 잠시 후 다시 시도해 주세요.", "bad");
+          btnRecover.disabled = false;
+          return;
+        }
+
+        const items = data.items || [];
+        if(items.length === 0){
+          setRecoverStatus(
+            "일치하는 접수 내역을 찾지 못했어요.\n이름/연락처/접수일을 다시 확인해 주세요.",
+            "warn"
+          );
+          btnRecover.disabled = false;
+          return;
+        }
+
+        setRecoverStatus(`확인되었습니다. (총 ${items.length}건)`, "ok");
+
+        recoverList.innerHTML = items.map((it, idx) => `
+          <div class="recover-item">
+            <div class="recover-left">
+              <div class="recover-receipt">${esc(it.receipt)}</div>
+              <div class="recover-meta">
+                접수시간: ${esc(it.createdKST || "")}<br/>
+                연락처: ${esc(it.phoneMasked || "")}
+              </div>
+            </div>
+            <div class="recover-right">
+              <button class="btn-mini" data-action="fill" data-receipt="${esc(it.receipt)}">이 번호로 조회</button>
+              <button class="btn-mini btn-mini-ghost" data-action="copy" data-receipt="${esc(it.receipt)}">복사</button>
+              <button class="btn-mini btn-mini-ghost" data-action="download" data-idx="${idx}">접수증 저장</button>
+            </div>
+          </div>
+        `).join("");
+
+        // 이벤트 위임
+        recoverList.onclick = async (e)=>{
+          const btn = e.target.closest("button");
+          if(!btn) return;
+
+          const action = btn.dataset.action;
+          if(action === "fill"){
+            const receipt = btn.dataset.receipt || "";
+            document.getElementById("receipt").value = receipt;
+            recoverBox.style.display = "none";
+            doQuery();
+          }
+          if(action === "copy"){
+            const receipt = btn.dataset.receipt || "";
+            try{
+              await navigator.clipboard.writeText(receipt);
+              setRecoverStatus("접수번호를 복사했어요.", "ok");
+            }catch{
+              setRecoverStatus("복사에 실패했어요. 접수번호를 길게 눌러 복사해 주세요.", "warn");
+            }
+          }
+          if(action === "download"){
+            const i = Number(btn.dataset.idx);
+            const item = items[i];
+            if(!item) return;
+            downloadReceiptMaskedPng(item);
+            setRecoverStatus("접수증 저장이 준비되었습니다.", "ok");
+          }
+        };
+
+      }catch(err){
+        console.error(err);
+        setRecoverStatus("네트워크 오류가 발생했어요. 잠시 후 다시 시도해주세요.", "bad");
+      }finally{
+        btnRecover.disabled = false;
+      }
+    }
+
+    btnRecover.addEventListener("click", doRecover);
+    [recoverName, recoverPhone].forEach(el=>{
+      el.addEventListener("keydown", (e)=>{ if(e.key === "Enter"){ e.preventDefault(); doRecover(); }});
+    });
   </script>
 </body>
 </html>
