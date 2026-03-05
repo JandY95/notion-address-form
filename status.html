@@ -193,7 +193,7 @@
       <div class="form">
         <label for="receipt">접수번호</label>
         <div class="row">
-          <input id="receipt" type="text" placeholder="예: 260101-123456-김서연-7890" />
+          <input id="receipt" type="text" placeholder="" />
           <!-- ✅ btn-query 중복 제거 -->
           <button id="btn" class="btn btn-query" type="button">조회</button>
         </div>
@@ -240,6 +240,23 @@
     })();
 
     const API_URL = "/api/status";
+    
+    // ✅ placeholder를 "오늘날짜-현재시간" 기준으로 자동 생성 (예: 260304-101530-김서연-7890)
+    (function setReceiptPlaceholder(){
+      const input = document.getElementById("receipt");
+      if(!input) return;
+
+      const d = new Date();
+
+      const yy = String(d.getFullYear()).slice(-2);        // 26
+      const mm = String(d.getMonth() + 1).padStart(2, "0");// 03
+      const dd = String(d.getDate()).padStart(2, "0");     // 04
+      const hh = String(d.getHours()).padStart(2, "0");    // 10
+      const mi = String(d.getMinutes()).padStart(2, "0");  // 15
+      const ss = String(d.getSeconds()).padStart(2, "0");  // 30
+
+      input.placeholder = `예: ${yy}${mm}${dd}-${hh}${mi}${ss}-김서연-7890`;
+    })();
 
     function setStatus(msg, type){
       const el = document.getElementById("status");
