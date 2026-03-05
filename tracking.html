@@ -83,6 +83,25 @@
       background: rgba(239,68,68,.06);
       color:#b91c1c;
     }
+
+    /* ✅ 파일 해제 버튼 */
+    .btn-mini{
+      border:none;
+      border-radius:999px;
+      padding:8px 10px;
+      font-size:13px;
+      font-weight:950;
+      cursor:pointer;
+      background:#fff;
+      border:1px solid rgba(229,231,235,.9);
+      color:#374151;
+      min-height:34px;
+    }
+    .btn-mini:disabled{
+      opacity:.55;
+      cursor:not-allowed;
+    }
+
     .small{font-size:12.5px; color:var(--muted);}
     table{width:100%; border-collapse:collapse; margin-top:12px; font-size:13px;}
     th,td{border-bottom:1px solid rgba(229,231,235,.9); padding:8px 6px; text-align:left; vertical-align:top;}
@@ -101,7 +120,8 @@
       <div class="inner">
         <div class="note">
           1) CJ 엑셀 업로드 → 2) 미리보기 → 3) 적용 순서로 진행하세요.<br/>
-          엑셀 컬럼: <b>고객주문번호</b>(=접수번호), <b>운송장번호</b>(=송장번호)
+          엑셀 컬럼: <b>고객주문번호</b>(=접수번호), <b>운송장번호</b>(=송장번호)<br/>
+          <b>※ 엑셀 파일은 한 번에 1개만</b> 선택/드롭할 수 있어요.
         </div>
 
         <label>운영자 비밀번호</label>
@@ -114,7 +134,7 @@
           <label style="margin:0;"><input type="checkbox" id="overwrite" /> 기존 송장번호도 덮어쓰기</label>
           <label style="margin:0;"><input type="checkbox" id="setDone" checked /> 적용 시 출고완료+출고일시(오늘) 자동</label>
 
-          <!-- ✅ 기본 OFF (checked 없음) -->
+          <!-- ✅ 기본 OFF -->
           <label style="margin:0;">
             <input type="checkbox" id="checkMissStatus" />
             미일치 상태 확인(느림)
@@ -128,9 +148,10 @@
           <div class="fileline">
             <span class="filepill" id="filePill">선택된 파일 없음</span>
             <span class="small" id="fileMeta"></span>
+            <button class="btn-mini" id="btnClearFile" type="button" disabled>파일 해제</button>
           </div>
 
-          <!-- ✅ 파일선택 input은 숨김(버튼 제거 목적) -->
+          <!-- ✅ 파일선택 input은 숨김 -->
           <input id="file" type="file" accept=".xlsx,.xls" style="display:none;" />
         </div>
 
@@ -157,6 +178,7 @@
     const tableWrap = document.getElementById("tableWrap");
     const filePill = document.getElementById("filePill");
     const fileMeta = document.getElementById("fileMeta");
+    const btnClearFile = document.getElementById("btnClearFile");
 
     // ✅ 드롭존 클릭/Enter/Space → 파일 선택창 열기
     drop.addEventListener("click", () => fileInput.click());
@@ -167,29 +189,42 @@
       }
     });
 
+    // ✅ "파일 해제" 버튼 클릭 시: 드롭존 클릭 이벤트로 파일창이 뜨지 않게 막기
+    btnClearFile.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      clearSelectedFile();
+    });
+
     let selectedFile = null;
+    let parsedItems = [];
 
     function isExcelFile(file){
       const name = (file?.name || "").toLowerCase();
       return name.endsWith(".xlsx") || name.endsWith(".xls");
     }
 
+    function setProgress(msg){ progress.textContent = msg || ""; }
+
     function setFileUI({ file, count, error, loading }){
       if(error){
         filePill.textContent = error;
         filePill.className = "filepill bad";
         fileMeta.textContent = "";
+        btnClearFile.disabled = true;
         return;
       }
       if(!file){
         filePill.textContent = "선택된 파일 없음";
         filePill.className = "filepill";
         fileMeta.textContent = "";
+        btnClearFile.disabled = true;
         return;
       }
 
       filePill.textContent = file.name;
       filePill.className = "filepill ok";
+      btnClearFile.disabled = false;
 
       if(loading){
         fileMeta.textContent = "(읽는 중...)";
@@ -200,10 +235,21 @@
       }
     }
 
-    let parsedItems = [];
+    function esc(s){
+      return String(s||"").replace(/[&<>"']/g, m => ({
+        '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+      }[m]));
+    }
 
-    function setProgress(msg){ progress.textContent = msg || ""; }
-    function esc(s){ return String(s||"").replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+    function clearSelectedFile(){
+      selectedFile = null;
+      parsedItems = [];
+      fileInput.value = "";          // ✅ 같은 파일 다시 선택 가능
+      setFileUI({ file:null });
+      setProgress("");
+      summary.innerHTML = "";
+      tableWrap.innerHTML = "";
+    }
 
     function parseXlsx(file){
       return new Promise((resolve, reject) => {
@@ -243,19 +289,47 @@
       });
     }
 
+    function bindFile(file){
+      if(!file) return;
+
+      // ✅ 엑셀 확장자 체크
+      if(!isExcelFile(file)){
+        clearSelectedFile();
+        setFileUI({ error: "엑셀(.xlsx/.xls) 파일만 선택해 주세요." });
+        alert("엑셀(.xlsx/.xls) 파일만 선택해 주세요.");
+        return;
+      }
+
+      // 새 파일 선택 시 이전 결과 표/요약 초기화
+      summary.innerHTML = "";
+      tableWrap.innerHTML = "";
+
+      selectedFile = file;
+      setFileUI({ file, loading:true });
+      setProgress("엑셀 읽는 중...");
+
+      parseXlsx(file).then(items=>{
+        parsedItems = items;
+        setFileUI({ file, count: items.length });
+        setProgress(`엑셀 로드 완료: ${items.length}건 (미리보기 버튼을 눌러주세요)`);
+        setTimeout(()=> setProgress(""), 4000);
+      }).catch(err=>{
+        clearSelectedFile();
+        setFileUI({ error: "엑셀 읽기 실패 (파일 형식 확인)" });
+        alert(err.message || "엑셀 읽기 실패");
+      });
+    }
+
     async function callApi({ dryRun }){
       const pass = document.getElementById("pass").value.trim();
       const overwrite = document.getElementById("overwrite").checked;
       const setDone = document.getElementById("setDone").checked;
       const lookbackDays = Number(document.getElementById("lookback").value || 14);
-
-      // ✅ 미일치 상태 확인 옵션(기본 OFF)
       const checkMissStatus = document.getElementById("checkMissStatus")?.checked ?? false;
 
       if(!pass){ alert("비밀번호를 입력해주세요."); return; }
       if(!parsedItems.length){ alert("엑셀 파일을 먼저 선택/드롭 해주세요."); return; }
 
-      // 너무 많은 건은 나눠서 처리(무료/안정)
       const CHUNK = 120;
       const chunks = [];
       for(let i=0;i<parsedItems.length;i+=CHUNK){
@@ -336,48 +410,22 @@
       }
     }
 
-    function bindFile(file){
-      if(!file) return;
-
-      // ✅ 여러 파일을 한 번에 드롭했으면 "첫번째만" 사용(실수 방지)
-      // (drop handler에서 files[0]만 넘겨주므로 여기선 참고만)
-
-      // ✅ 엑셀 확장자 체크(안전장치)
-      if(!isExcelFile(file)){
-        selectedFile = null;
-        parsedItems = [];
-        setProgress("");
-        setFileUI({ error: "엑셀(.xlsx/.xls) 파일만 선택해 주세요." });
-        alert("엑셀(.xlsx/.xls) 파일만 선택해 주세요.");
-        return;
-      }
-
-      selectedFile = file;
-      setFileUI({ file, loading:true });
-      setProgress("엑셀 읽는 중...");
-
-      parseXlsx(file).then(items=>{
-        parsedItems = items;
-        setFileUI({ file, count: items.length });
-        setProgress(`엑셀 로드 완료: ${items.length}건 (미리보기 버튼을 눌러주세요)`);
-        // 4초 후 안내 문구 지우고 싶으면 아래 줄 유지
-        setTimeout(()=> setProgress(""), 4000);
-      }).catch(err=>{
-        selectedFile = null;
-        parsedItems = [];
-        setProgress("");
-        setFileUI({ error: "엑셀 읽기 실패 (파일 형식 확인)" });
-        alert(err.message || "엑셀 읽기 실패");
-      });
-    }
-
+    // drag & drop
     drop.addEventListener("dragover", (e)=>{ e.preventDefault(); drop.classList.add("drag"); });
     drop.addEventListener("dragleave", ()=> drop.classList.remove("drag"));
     drop.addEventListener("drop", (e)=>{
       e.preventDefault();
       drop.classList.remove("drag");
-      const f = e.dataTransfer.files && e.dataTransfer.files[0];
-      if(f) bindFile(f);
+
+      const files = e.dataTransfer.files;
+      if(!files || files.length === 0) return;
+
+      // ✅ 여러 개 드롭 방지(안내 + 첫 번째만)
+      if(files.length > 1){
+        alert("엑셀 파일은 한 번에 1개만 가능합니다. 첫 번째 파일만 사용합니다.");
+      }
+
+      bindFile(files[0]);
     });
 
     fileInput.addEventListener("change", (e)=>{
