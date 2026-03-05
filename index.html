@@ -439,9 +439,26 @@
       width: 140px;
       padding: 12px 12px;
     }
-    @media (max-width: 640px){
-      .addr-row .btn-find{ width: 100%; }
-    }
+    /* ✅ 모바일: 주소 입력칸을 먼저 보여주고, 주소찾기 버튼은 아래로 */
+@media (max-width: 640px){
+  .addr-row{
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  /* 주소 칸이 안 찌그러지게 강제 */
+  .addr-row #baseAddress{
+    width: 100%;
+    flex: 0 0 auto;
+  }
+
+  /* 버튼은 아래로 100% */
+  .addr-row .btn-find{
+    width: 100%;
+    flex: 0 0 auto;
+  }
+}
   </style>
 </head>
 
