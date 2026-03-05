@@ -70,7 +70,7 @@
     }
     .btn-top:active{ transform: translateY(1px); }
 
-    /* ✅ 브랜드 영역: index.html과 구조/라인하이트 완전 동일 */
+    /* ✅ 브랜드 영역 */
     .brand-row{ display:flex; align-items:center; gap:12px; margin:0; }
     .mono{
       width:44px;height:44px;border-radius:16px;
@@ -92,7 +92,7 @@
       letter-spacing:1px;
       font-size:14px;
       opacity:.95;
-      line-height:1.1; /* ✅ 글자 기준선(세로 위치) 고정 */
+      line-height:1.1;
     }
 
     .title{ margin:8px 0 6px; font-size:clamp(28px,4.8vw,40px); font-weight:980; letter-spacing:-.5px; }
@@ -115,6 +115,7 @@
       padding:12px 12px; font-size:16px; outline:none; background:#fff;
     }
     input:focus{ border-color:rgba(229,106,166,.55); box-shadow:0 0 0 4px rgba(229,106,166,.13); }
+
     .row{ display:flex; gap:10px; align-items:center; margin-top:8px; }
     .row > *{ flex:1; }
 
@@ -141,23 +142,25 @@
     .k{ color:var(--muted); font-weight:950; }
     .v{ font-weight:980; }
 
-    @media (max-width:640px){
-      .wrap{ margin:18px auto 46px; }
-      .form{ padding:16px; }
-      .row{ flex-direction:column; align-items:stretch; }
-
-      /* ✅ 모바일에서도 헤더 정렬 통일 */
-      .hero-head{ gap:10px; }
-      .top-actions{ width:100%; justify-content:flex-end; }
-    }
-
-    /* 조회 버튼 고정폭 */
+    /* 조회 버튼 고정폭(PC) */
     .btn-query{
       flex: 0 0 auto;
       width: 140px;
       padding: 12px 12px;
     }
-    @media (max-width: 640px){
+
+    /* ✅ 모바일: 입력칸 위 / 버튼 아래 + 헤더 정렬 통일 */
+    @media (max-width:640px){
+      .wrap{ margin:18px auto 46px; }
+      .form{ padding:16px; }
+
+      .hero-head{ gap:10px; }
+      .top-actions{ width:100%; justify-content:flex-end; }
+
+      /* 입력칸 위 / 버튼 아래 */
+      .row{ flex-direction:column; align-items:stretch; }
+
+      /* 버튼 100% */
       .btn-query{ width: 100%; }
     }
   </style>
@@ -191,7 +194,8 @@
         <label for="receipt">접수번호</label>
         <div class="row">
           <input id="receipt" type="text" placeholder="예: 260101-123456-김서연-7890" />
-          <button id="btn" class="btn btn-query btn-query" type="button">조회</button>
+          <!-- ✅ btn-query 중복 제거 -->
+          <button id="btn" class="btn btn-query" type="button">조회</button>
         </div>
 
         <div id="status" class="status"></div>
