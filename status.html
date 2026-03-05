@@ -66,8 +66,11 @@
       padding:10px 14px; border-radius:14px;
       font-weight:950; color:#b84a84; cursor:pointer; text-decoration:none;
       white-space:nowrap;
+      user-select:none;
     }
+    .btn-top:active{ transform: translateY(1px); }
 
+    /* ✅ 브랜드 영역: index.html과 구조/라인하이트 완전 동일 */
     .brand-row{ display:flex; align-items:center; gap:12px; margin:0; }
     .mono{
       width:44px;height:44px;border-radius:16px;
@@ -82,7 +85,15 @@
       transform:rotate(12deg);
     }
     .mono span{ position:relative; z-index:1; font-size:18px; }
-    .brand-name{ font-weight:950; letter-spacing:1px; font-size:14px; opacity:.95; }
+
+    .brand-text{ display:flex; flex-direction:column; line-height:1.1; }
+    .brand-name{
+      font-weight:950;
+      letter-spacing:1px;
+      font-size:14px;
+      opacity:.95;
+      line-height:1.1; /* ✅ 글자 기준선(세로 위치) 고정 */
+    }
 
     .title{ margin:8px 0 6px; font-size:clamp(28px,4.8vw,40px); font-weight:980; letter-spacing:-.5px; }
     .subtitle{ margin:0; color:var(--muted); line-height:1.7; font-size:14.5px; }
@@ -113,7 +124,10 @@
       background:linear-gradient(135deg, var(--accent), var(--accent2));
       color:#fff; box-shadow:0 12px 24px rgba(229,106,166,.16);
       white-space:nowrap;
+      user-select:none;
     }
+    .btn:active{ transform: translateY(1px); }
+
     .status{ margin-top:12px; font-size:14px; line-height:1.5; min-height:22px; color:var(--muted); white-space:pre-line; }
     .status.bad{ color:#b91c1c; font-weight:950; }
     .status.ok{ color:#0f766e; font-weight:950; }
@@ -154,7 +168,7 @@
       <div class="hero-head">
         <div class="brand-row">
           <div class="mono"><span>C</span></div>
-          <div>
+          <div class="brand-text">
             <div class="brand-name">COCORO SHOP</div>
           </div>
         </div>
@@ -177,7 +191,7 @@
         <label for="receipt">접수번호</label>
         <div class="row">
           <input id="receipt" type="text" placeholder="예: 260101-123456-김서연-7890" />
-          <button id="btn" class="btn btn-query" type="button">조회</button>
+          <button id="btn" class="btn btn-query btn-query" type="button">조회</button>
         </div>
 
         <div id="status" class="status"></div>
