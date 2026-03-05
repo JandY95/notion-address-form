@@ -46,6 +46,43 @@
       background:rgba(255,255,255,.7);
     }
     .drop.drag{background:rgba(229,106,166,.06);}
+
+    /* ✅ 드롭존을 클릭 가능한 영역처럼 보이게 */
+    .drop{ cursor:pointer; }
+    .drop:focus{
+      outline:none;
+      box-shadow: 0 0 0 4px rgba(229,106,166,.13);
+    }
+
+    /* ✅ 파일명 표시 라인 */
+    .fileline{
+      margin-top:10px;
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+    .filepill{
+      display:inline-flex;
+      align-items:center;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid rgba(229,231,235,.95);
+      background:#fff;
+      font-weight:900;
+      font-size:13px;
+      color:#374151;
+    }
+    .filepill.ok{
+      border-color: rgba(15,118,110,.25);
+      background: rgba(15,118,110,.06);
+      color: var(--ok);
+    }
+    .filepill.bad{
+      border-color: rgba(239,68,68,.28);
+      background: rgba(239,68,68,.06);
+      color:#b91c1c;
+    }
     .small{font-size:12.5px; color:var(--muted);}
     table{width:100%; border-collapse:collapse; margin-top:12px; font-size:13px;}
     th,td{border-bottom:1px solid rgba(229,231,235,.9); padding:8px 6px; text-align:left; vertical-align:top;}
@@ -84,12 +121,17 @@
           </label>
         </div>
 
-        <div class="drop" id="drop">
-          <div><b>여기에 CJ 엑셀(.xlsx)을 드래그&드롭</b> 하거나, 아래 버튼으로 선택하세요.</div>
-          <div class="small">엑셀을 서버로 업로드하지 않고, 브라우저에서 읽어서 필요한 값만 전송합니다.</div>
-          <div style="margin-top:10px;">
-            <input id="file" type="file" accept=".xlsx,.xls" />
+        <div class="drop" id="drop" role="button" tabindex="0" aria-label="CJ 엑셀 파일 선택 또는 드래그&드롭">
+          <div><b>여기를 클릭해서 CJ 엑셀(.xlsx)을 선택</b>하거나, 드래그&드롭 하세요.</div>
+          <div class="small">엑셀은 서버에 업로드하지 않고, 브라우저에서 읽어 필요한 값만 전송합니다.</div>
+
+          <div class="fileline">
+            <span class="filepill" id="filePill">선택된 파일 없음</span>
+            <span class="small" id="fileMeta"></span>
           </div>
+
+          <!-- ✅ 파일선택 input은 숨김(버튼 제거 목적) -->
+          <input id="file" type="file" accept=".xlsx,.xls" style="display:none;" />
         </div>
 
         <div class="row" style="margin-top:12px;">
@@ -113,6 +155,50 @@
     const progress = document.getElementById("progress");
     const summary = document.getElementById("summary");
     const tableWrap = document.getElementById("tableWrap");
+    const filePill = document.getElementById("filePill");
+    const fileMeta = document.getElementById("fileMeta");
+
+    // ✅ 드롭존 클릭/Enter/Space → 파일 선택창 열기
+    drop.addEventListener("click", () => fileInput.click());
+    drop.addEventListener("keydown", (e) => {
+      if(e.key === "Enter" || e.key === " "){
+        e.preventDefault();
+        fileInput.click();
+      }
+    });
+
+    let selectedFile = null;
+
+    function isExcelFile(file){
+      const name = (file?.name || "").toLowerCase();
+      return name.endsWith(".xlsx") || name.endsWith(".xls");
+    }
+
+    function setFileUI({ file, count, error, loading }){
+      if(error){
+        filePill.textContent = error;
+        filePill.className = "filepill bad";
+        fileMeta.textContent = "";
+        return;
+      }
+      if(!file){
+        filePill.textContent = "선택된 파일 없음";
+        filePill.className = "filepill";
+        fileMeta.textContent = "";
+        return;
+      }
+
+      filePill.textContent = file.name;
+      filePill.className = "filepill ok";
+
+      if(loading){
+        fileMeta.textContent = "(읽는 중...)";
+      }else if(typeof count === "number"){
+        fileMeta.textContent = `(${count.toLocaleString()}건 로드)`;
+      }else{
+        fileMeta.textContent = "";
+      }
+    }
 
     let parsedItems = [];
 
@@ -251,13 +337,36 @@
     }
 
     function bindFile(file){
+      if(!file) return;
+
+      // ✅ 여러 파일을 한 번에 드롭했으면 "첫번째만" 사용(실수 방지)
+      // (drop handler에서 files[0]만 넘겨주므로 여기선 참고만)
+
+      // ✅ 엑셀 확장자 체크(안전장치)
+      if(!isExcelFile(file)){
+        selectedFile = null;
+        parsedItems = [];
+        setProgress("");
+        setFileUI({ error: "엑셀(.xlsx/.xls) 파일만 선택해 주세요." });
+        alert("엑셀(.xlsx/.xls) 파일만 선택해 주세요.");
+        return;
+      }
+
+      selectedFile = file;
+      setFileUI({ file, loading:true });
       setProgress("엑셀 읽는 중...");
+
       parseXlsx(file).then(items=>{
         parsedItems = items;
-        setProgress("");
-        alert(`엑셀 로드 완료: ${items.length}건`);
+        setFileUI({ file, count: items.length });
+        setProgress(`엑셀 로드 완료: ${items.length}건 (미리보기 버튼을 눌러주세요)`);
+        // 4초 후 안내 문구 지우고 싶으면 아래 줄 유지
+        setTimeout(()=> setProgress(""), 4000);
       }).catch(err=>{
+        selectedFile = null;
+        parsedItems = [];
         setProgress("");
+        setFileUI({ error: "엑셀 읽기 실패 (파일 형식 확인)" });
         alert(err.message || "엑셀 읽기 실패");
       });
     }
