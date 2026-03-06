@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>COCORO SHOP | 접수 조회</title>
+  <title>COCORO SHOP | 배송 조회</title>
   <style>
     :root{
       --bg1:#fff7fb; --bg2:#f6fbff;
@@ -286,13 +286,13 @@
         </div>
       </div>
 
-      <h1 class="title">접수 조회</h1>
-      <p class="subtitle">접수번호로 현재 처리 상태 / 송장번호를 확인할 수 있어요.</p>
+      <h1 class="title">배송 조회</h1>
+      <p class="subtitle">접수번호로 현재 진행 상태와 송장번호를 확인할 수 있어요.</p>
     </header>
 
     <section class="card">
       <div class="card-top">
-        💡 접수번호는 접수증에 적혀 있어요. (접수번호만 입력하면 됩니다)
+        💡 접수번호는 접수증에 적혀 있어요. 접수번호만 입력하시면 바로 조회할 수 있어요.
       </div>
 
       <div class="form">
@@ -303,7 +303,7 @@
         </div>
 
         <div class="helper-row">
-          <button id="btnRecoverToggle" class="btn-ghost" type="button">🔎 접수번호 다시 확인</button>
+          <button id="btnRecoverToggle" class="btn-ghost" type="button">🔎 접수번호 다시 확인하기</button>
         </div>
 
         <div id="status" class="status"></div>
@@ -313,8 +313,8 @@
         <div id="recoverBox" class="recover" style="display:none;">
           <div class="recover-head">접수번호 다시 확인</div>
           <div class="recover-note">
-            이름 / 연락처 / 접수일(날짜)로 접수번호를 찾을 수 있어요.<br/>
-            같은 날 주문이 2건 이상이면 목록으로 보여드려요. (개인정보 보호를 위해 일부 정보는 가려서 표시돼요)
+            이름 / 연락처 / 접수일로 접수번호를 다시 확인할 수 있어요.<br/>
+            같은 날 주문이 여러 건이면 목록으로 보여드리며, 개인정보 보호를 위해 일부 정보는 가려서 표시돼요.
           </div>
 
           <div class="recover-grid">
@@ -335,7 +335,7 @@
           </div>
 
           <div class="recover-actions">
-            <button id="btnRecover" class="btn-mini" type="button">조회하기</button>
+            <button id="btnRecover" class="btn-mini" type="button">접수번호 찾기</button>
             <button id="btnRecoverClose" class="btn-mini btn-mini-ghost" type="button">닫기</button>
           </div>
 
@@ -473,7 +473,7 @@
         const res = await fetch(`${API_URL}?receipt=${encodeURIComponent(receipt)}`);
         const data = await res.json().catch(()=> ({}));
         if(res.ok){
-          setStatus("조회가 완료되었습니다.", "ok");
+          setStatus("조회가 완료되었어요.", "ok");
           setResult(data);
         }else if(res.status === 404){
           setResult(null);
@@ -625,18 +625,16 @@
 
       y += rowGap;
       labelStyle(); ctx.fillText("주소", leftK, y);
-      valueStyle();
-      const addr = item.baseAddress ? `${item.baseAddress} ${maskDetail(item.detailAddress)}` : "주소 정보(가림)";
-      wrapText(ctx, addr, leftV, y, w-48-leftV, 32);
+      valueStyle(); ctx.fillText("개인정보 보호를 위해 가려져 있어요.", leftV, y);
 
-      y += rowGap + 20;
+      y += rowGap;
       labelStyle(); ctx.fillText("요청사항", leftK, y);
-      valueStyle(); ctx.fillText((item.request || "없음").slice(0, 26), leftV, y);
+      valueStyle(); ctx.fillText("개인정보 보호를 위해 가려져 있어요.", leftV, y);
 
       y += rowGap;
       labelStyle(); ctx.fillText("안내", leftK, y);
       ctx.fillStyle="#111827"; ctx.font="bold 22px Arial";
-      ctx.fillText("개인정보 보호를 위해 일부 정보가 가려져 있어요.", leftV, y);
+      ctx.fillText("접수번호와 접수시간만으로도 조회하실 수 있어요.", leftV, y);
 
       const url = canvas.toDataURL("image/png");
       const a = document.createElement("a");
@@ -716,7 +714,7 @@
           return;
         }
 
-        setRecoverStatus(`확인되었습니다. (총 ${items.length}건)`, "ok");
+        setRecoverStatus(`확인되었어요. (총 ${items.length}건)`, "ok");
 
         recoverList.innerHTML = items.map((it, idx) => `
           <div class="recover-item">
@@ -761,7 +759,7 @@
             const item = items[i];
             if(!item) return;
             downloadReceiptMaskedPng(item);
-            setRecoverStatus("접수증 저장이 준비되었습니다.", "ok");
+            setRecoverStatus("접수증 저장이 준비되었어요.", "ok");
           }
         };
 

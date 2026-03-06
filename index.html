@@ -254,6 +254,23 @@
       gap: 10px;
       flex-wrap:wrap;
     }
+    .trust-row{
+      margin-top:14px;
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+    .trust-pill{
+      display:inline-flex;
+      align-items:center;
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid rgba(229,231,235,.85);
+      background:rgba(255,255,255,.72);
+      color:#374151;
+      font-size:12.8px;
+      font-weight:900;
+    }
 
     /* 에러 */
     .error-box{
@@ -471,15 +488,20 @@
         </div>
 
         <div class="top-actions">
-          <a class="btn-top" href="./status.html">🔎 접수 조회</a>
+          <a class="btn-top" href="./status.html">🔎 배송 조회</a>
         </div>
       </div>
 
-      <h1 class="title">배송 정보</h1>
+      <h1 class="title">배송 정보 입력</h1>
       <p class="subtitle">
-        주문하신 상품을 정확하고 안전하게 보내기 위해 배송 정보를 입력해주세요.<br/>
-        입력하신 정보는 <b>배송 처리 목적</b>으로만 사용됩니다.
+        주문하신 상품을 가장 아름답고 정확한 상태로 보내드리기 위해 배송 정보를 확인할게요.<br/>
+        입력하신 정보는 <b>배송 처리 목적</b>으로만 사용되며, 접수 후에는 <b>접수번호로 배송 조회</b>가 가능해요.
       </p>
+      <div class="trust-row" aria-label="안심 안내">
+        <span class="trust-pill">약 1분 내 입력</span>
+        <span class="trust-pill">배송 목적만 사용</span>
+        <span class="trust-pill">접수번호로 배송 조회 가능</span>
+      </div>
     </header>
 
     <!-- ===== RECEIPT HERO (폼 제출 후에는 이쪽만 보여줌) ===== -->
@@ -493,13 +515,13 @@
         </div>
 
         <div class="top-actions">
-          <a class="btn-top" id="topStatusLink" href="./status.html">🔎 접수 조회</a>
+          <a class="btn-top" id="topStatusLink" href="./status.html">🔎 배송 조회</a>
         </div>
       </div>
 
       <h1 class="title">접수 완료</h1>
       <p class="subtitle">
-        아래 접수증을 저장해두시면, 나중에 “접수 조회”에서 상태/송장번호를 확인하실 수 있어요.
+        아래 접수증을 저장해두시면, 나중에 “배송 조회”에서 진행 상태와 송장번호를 편하게 확인하실 수 있어요.
       </p>
     </header>
 
@@ -507,8 +529,8 @@
     <section class="card" aria-label="배송 정보 입력 폼" id="formCard">
       <div class="card-top">
         <div class="notice">
-          💡 <b>요청사항을 제외한 모든 항목은 필수</b>입니다.<br/>
-          ‘입력 완료’ 버튼을 누르면 누락된 항목을 안내해드려요.
+          💡 <b>요청사항을 제외한 모든 항목은 필수</b>예요.<br/>
+          정확한 배송을 위해 필요한 정보만 확인하며, 누락된 항목은 마지막에 한 번 더 안내해드려요.
         </div>
       </div>
 
@@ -519,15 +541,15 @@
           <div class="grid">
             <div class="field" id="f_customerName">
               <label for="customerName">받는 분 성함</label>
-              <input type="text" id="customerName" placeholder="예: 김서연" autocomplete="name" />
-              <div class="hint">실명 입력을 권장해요. (오배송/반송 방지)</div>
+              <input type="text" id="customerName" placeholder="예: 김서연" autocomplete="name" maxlength="40" />
+              <div class="hint">실명 또는 실제 수령자 성함을 권장해요. (오배송·반송 방지)</div>
               <div class="err">받는 분 성함을 입력해주세요.</div>
             </div>
 
             <div class="field" id="f_phone">
               <label for="phone">연락처</label>
-              <input type="tel" id="phone" placeholder="예: 010-1234-5678 / 02-123-4567" inputmode="tel" autocomplete="tel" />
-              <div class="hint">휴대폰 또는 지역번호 포함 번호를 입력해주세요.</div>
+              <input type="tel" id="phone" placeholder="예: 010-1234-5678 / 02-123-4567" inputmode="tel" autocomplete="tel" maxlength="20" />
+              <div class="hint">배송 안내를 정확히 드릴 수 있도록 휴대폰 또는 지역번호 포함 번호를 입력해 주세요.</div>
               <div class="err">연락처 형식을 확인해주세요.</div>
             </div>
 
@@ -542,36 +564,36 @@
                 <input type="text" id="baseAddress" class="readonly" readonly placeholder="‘주소 찾기’로 검색해주세요" />
                 <button type="button" class="btn btn-outline btn-find" onclick="openPostcode()">🔎 주소 찾기</button>
               </div>
-              <div class="hint">도로명 주소를 선택하면 자동으로 입력되요.</div>
+              <div class="hint">도로명 주소를 선택하면 기본주소가 자동으로 입력돼요.</div>
               <div class="err">주소 찾기를 눌러 주소를 선택해주세요.</div>
             </div>
 
             <div class="field" id="f_detailAddress" style="grid-column: 1 / -1;">
               <label for="detailAddress">상세주소</label>
-              <input type="text" id="detailAddress" placeholder="동/호수, 상호명, 층수 등" autocomplete="street-address" />
-              <div class="hint">예: 101동 1203호 / COCORO 빌딩 1층</div>
+              <input type="text" id="detailAddress" placeholder="동/호수, 상호명, 층수 등" autocomplete="street-address" maxlength="140" />
+              <div class="hint">예: 101동 1203호 / COCORO 빌딩 1층 / 상호명</div>
               <div class="err">상세주소를 입력해주세요.</div>
             </div>
           </div>
 
           <div class="field" id="f_request" style="margin-top: 14px;">
             <label for="request">요청사항 (선택)</label>
-            <textarea id="request" placeholder="예: 부재시 문 앞에 놓아주세요 / 경비실 맡겨주세요"></textarea>
+            <textarea id="request" placeholder="예: 부재 시 문 앞에 놓아주세요 / 경비실에 맡겨주세요" maxlength="300"></textarea>
           </div>
 
           <div class="field" id="f_confirm">
             <div class="checkwrap">
               <input type="checkbox" id="confirmCheck" />
               <div>
-                <div class="ctitle">오배송 방지 확인 — 입력한 성함/연락처/주소가 정확한가요?</div>
-                <div class="csub">입력 완료 전 꼭 한 번 확인해주세요.</div>
-                <div class="err" style="margin-top:6px;">오배송 방지 확인에 체크해주세요.</div>
+                <div class="ctitle">입력하신 성함·연락처·주소를 한 번 더 확인해 주세요.</div>
+                <div class="csub">정확한 배송을 위해 마지막으로 한 번만 확인해 주세요.</div>
+                <div class="err" style="margin-top:6px;">정확한 배송을 위해 확인 체크를 부탁드려요.</div>
               </div>
             </div>
           </div>
 
           <div class="actions">
-            <button type="submit" class="btn btn-primary" id="submitBtn">입력 완료</button>
+            <button type="submit" class="btn btn-primary" id="submitBtn">배송정보 접수하기</button>
           </div>
 
           <div id="status" class="status" aria-live="polite"></div>
@@ -606,13 +628,13 @@
         </div>
 
         <div class="receipt-note">
-          수정이 필요하신 경우 인스타 DM으로 <b>접수번호</b>와 수정 내용을 보내주세요.<br/>
-          조회는 “접수 조회”에서 <b>접수번호만</b> 입력하면 확인할 수 있어요.
+          입력 내용을 수정해야 하시면 인스타그램 DM으로 <b>접수번호</b>와 수정 내용을 보내주세요.<br/>
+          진행 상태 확인은 “배송 조회”에서 <b>접수번호만</b> 입력하시면 바로 확인할 수 있어요.
         </div>
 
         <div class="actions" style="margin-top:14px;">
           <button class="btn btn-ghost" type="button" id="copyReceiptBtn">접수번호 복사</button>
-          <a class="btn btn-ghost" id="goStatusBtn" href="./status.html" style="text-decoration:none;display:inline-flex;justify-content:center;align-items:center;">접수 조회</a>
+          <a class="btn btn-ghost" id="goStatusBtn" href="./status.html" style="text-decoration:none;display:inline-flex;justify-content:center;align-items:center;">배송 조회</a>
           <button class="btn btn-primary" type="button" id="savePngBtn">접수증 저장</button>
         </div>
 
@@ -933,19 +955,19 @@
       if(!confirmCheck){
         document.getElementById('f_confirm').classList.add('invalid');
         document.querySelector('#f_confirm .err').style.display = 'block';
-        missing.push('오배송 방지 확인(체크)');
+        missing.push('배송정보 최종 확인(체크)');
       }
 
       if(missing.length){
         showErrors(missing);
-        setStatus('필수 항목이 누락되었습니다. 위 항목을 확인해주세요.', 'bad');
+        setStatus('입력되지 않은 항목이 있어요. 위 안내에 따라 차근차근 확인해 주세요.', 'bad');
         return;
       }
 
       const btn = document.getElementById('submitBtn');
       btn.disabled = true;
       btn.style.filter = 'grayscale(.1) opacity(.85)';
-      setStatus('저장 중입니다… 잠시만 기다려주세요.');
+      setStatus('안전하게 접수 중이에요… 잠시만 기다려 주세요.');
 
       const payload = {
         customerName, phone, postcode, baseAddress, detailAddress, request, website
@@ -995,16 +1017,16 @@
               address: fullAddress,
               request: request || '없음'
             });
-            setReceiptStatus('✅ 접수증 저장이 준비되었습니다.', 'ok');
+            setReceiptStatus('✅ 접수증 저장이 준비되었어요.', 'ok');
           };
 
           showReceiptScreen();
         } else {
-          setStatus(`❌ 저장 실패: ${result.error || raw || '오류'}`, 'bad');
+          setStatus(`❌ 접수 저장이 완료되지 않았어요: ${result.error || raw || '오류'}`, 'bad');
         }
       } catch (error) {
         console.error(error);
-        setStatus(`❌ 저장 후 화면 표시 중 오류가 발생했어요. 다시 시도해주세요. (${error?.message || 'unknown'})`, 'bad');
+        setStatus(`❌ 접수 후 화면 표시 중 오류가 발생했어요. 잠시 후 다시 시도해 주세요. (${error?.message || 'unknown'})`, 'bad');
       } finally {
         btn.disabled = false;
         btn.style.filter = '';
