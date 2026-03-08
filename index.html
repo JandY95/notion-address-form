@@ -405,12 +405,13 @@
       align-items:center;
       justify-content:center;
       z-index: 9999;
-      padding: 12px;
+      padding: 16px;
     }
+    
     .modal{
-      width: min(520px, calc(100vw - 24px));
-      max-width: calc(100vw - 24px);
-      height: min(560px, 88vh);
+      width: min(500px, calc(100vw - 32px));
+      max-width: calc(100vw - 32px);
+      height: min(500px, calc(100vh - 32px));
       margin: 0 auto;
       background:#fff;
       border-radius: 18px;
@@ -419,6 +420,7 @@
       display:flex;
       flex-direction:column;
     }
+    
     .modal-top{
       display:flex;
       align-items:center;
@@ -428,6 +430,7 @@
       background: linear-gradient(90deg, rgba(229,106,166,.08), rgba(122,167,255,.08));
       font-weight: 950;
     }
+    
     .modal-close{
       border:none;
       background: rgba(255,255,255,.8);
@@ -437,22 +440,31 @@
       cursor:pointer;
       font-weight: 950;
     }
+    
     .modal-body{
       flex:1;
       overflow:hidden;
+      background:#fff;
     }
+    
     #postcodeWrap{
       width:100%;
       height:100%;
+      display:flex;
+      align-items:flex-start;
+      justify-content:center;
       overflow:hidden;
+      background:#fff;
     }
+    
     #postcodeWrap iframe{
       width:100% !important;
       height:100% !important;
+      min-width:0 !important;
       display:block;
       border:0;
+      background:#fff;
     }
-
     /* 주소 찾기 버튼만 고정폭으로 */
     .addr-row .btn-find{
       flex: 0 0 auto;
@@ -495,7 +507,7 @@
   .modal{
     width: calc(100vw - 20px);
     max-width: calc(100vw - 20px);
-    height: min(78vh, 640px);
+    height: min(68vh, 500px);
     margin: 0 auto;
     border-radius: 16px;
   }
